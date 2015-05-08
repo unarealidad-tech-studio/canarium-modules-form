@@ -1,0 +1,58 @@
+<?php
+if (count($this->results) >  0) {
+	$fh = @fopen( 'php://output', 'w' );
+
+	// Generate headers
+	$columnHeaders = array();
+	$columnHeaders[] = 'User';
+	$columnHeaders[] = 'Date';
+	$elementIds = array();
+	foreach ($this->results as $row) {		
+		foreach ($row->getForm()->getFieldset() as $fieldset) {
+			foreach ($fieldset->getElement() as $element) {
+				if (!empty($element->getLabel())) {
+					$elementIds[$element->getId()] = $element->getLabel();
+					$columnHeaders[] = $element->getLabel();
+				} else {
+					$elementIds[$element->getId()] = $element->getName();
+					$columnHeaders[] = $element->getName();
+				}
+			}
+		}
+		break;
+	}
+
+	
+	if($columnHeaders){
+		fputcsv ( $fh, $columnHeaders);
+	}
+
+	foreach ($this->results as $row) {
+		$dataVal = array();
+
+		foreach ($row->getData() as $data) {
+			$dataVal[$data->getElement()->getId()] = $data->getValue();
+		}
+	
+		$columnRow = array();
+    	$columnRow[] = $row->getUser()->getEmail();
+    	$columnRow[] = $row->getDate()->format('m-d-Y H:i:s');
+		foreach ($elementIds as $eid=>$elabel) {
+			
+			if (isset($dataVal[$eid])) {
+				$arrayVal = unserialize($dataVal[$eid]);
+				if (is_array($arrayVal)) {
+					$columnRow[] = implode("\n", $arrayVal);
+				} else {
+					$columnRow[] = $arrayVal;
+				}
+			} else {
+				$columnRow[] = '';
+			}
+		}
+		
+		fputcsv($fh, $columnRow);
+	}
+
+	fclose($fh);
+}

@@ -1,0 +1,59 @@
+<?php 
+$this->headLink()->appendStylesheet($this->basePath() . '/assets/plugins/lightbox/css/lightbox.css');
+$this->headScript()->prependFile($this->basePath() . '/assets/plugins/lightbox/js/lightbox.min.js');
+?>
+
+<div class="page-head">
+    <h3 class="m-b-less">
+        Form Results
+    </h3>
+</div>
+
+<div class="wrapper">
+	<div class="row">
+	    <div class="col-sm-12">
+	        <section class="panel">
+	            <header class="panel-heading ">
+	                "<?php echo $this->data->getForm()->getLabel() ?>" form results of <?php echo $this->data->getUser()->getEmail() ?> on <?php echo $this->data->getDate()->format('Y-m-d H:i:s') ?>
+	            </header>
+				<table class="table">
+					<tr style="max-width:40px;">
+						<th>Questions</th>
+						<th>Answers</th>
+					</tr>
+					<?php foreach ($this->data->getData() as $data) { ?>
+					<tr>
+						<th style="max-width:40px;">
+							<?php
+							$tmp = $data->getElement()->getLabel(); 
+							echo !empty($tmp) ? $data->getElement()->getLabel() : $data->getElement()->getName(); ?>
+						</th>
+						<td>
+							<?php 
+							$val =  $data->getValue();
+							if (!empty($val)) {
+								$formatVal = unserialize($val);
+								if (is_array($formatVal )) {
+									echo implode('<br />', $formatVal);
+								} else {
+									echo $formatVal;
+								}
+								
+							} else {
+								// do nothing;
+							}
+							?>
+						</td>
+					</tr>
+					<?php } ?>
+                    <tr>
+                    	<td>Photo Upload</td><td>
+                        <?php if($data->getParentData()->getUploads()->count()) : ?>
+                        <a href="<?=$data->getParentData()->getUploads()->first()->getPath()?>" data-lightbox="group"><img class="img-responsive" src="<?=$data->getParentData()->getUploads()->first()->getThumbnailPath()?>"/></a></td>
+                        <?php endif; ?>
+                    </tr>
+				</table>
+			</section>
+		</div>
+	</div>
+</div>

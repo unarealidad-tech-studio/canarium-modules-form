@@ -1,0 +1,68 @@
+<div class="page-head">
+    <h3 class="m-b-less">
+        Form Results
+    </h3>
+</div>
+
+<div class="wrapper">
+	<div class="row">
+	    <div class="col-sm-12">
+	        <section class="panel">
+	            <header class="panel-heading ">
+	                Result of <?php echo $this->form->getLabel() ?> Form
+	            </header>
+				<div class="results-container">
+					<div class="results-table">
+				        <table class="table">
+				        <thead>
+				        <tr>
+				        	<th>User</th>
+				        	<th>Date</th>
+							<?php
+							$elementIds = array();
+							foreach ($this->form->getFieldset() as $fieldset) {
+								foreach ($fieldset->getElement() as $element)  { ?>
+									<?php $elementIds[$element->getId()] = $element->getLabel(); ?>
+									<th><?php echo $element->getLabel(); ?></th>
+								<?php }
+							} ?>
+				        </tr>
+				        </thead>
+				        <tbody>
+							<?php
+							foreach ($this->paginator as $row) {
+							$dataVal = array();
+							?>
+					        <tr>
+					        	<td><?php echo $row->getUser()->getEmail() ?></td>
+					        	<td><?php echo $row->getDate()->format('m-d-Y H:i:s') ?></td>
+								<?php foreach ($row->getData() as $data) {
+									$dataVal[$data->getElement()->getId()] = $data->getValue();
+								}
+
+								foreach ($elementIds as $eid=>$elabel) { ?>
+									<?php $arrayVal = unserialize($dataVal[$eid]); ?>
+									<?php if (is_array($arrayVal)) { ?>
+									<td><?php echo implode("<br />", $arrayVal) ?></td>
+									<?php } else { ?>
+									<td><?php echo $arrayVal ?></td>
+									<?php } ?>
+								<?php } ?>
+							</tr>
+							<?php } ?>
+				        </tr>
+				        </tbody>
+				        </table>
+				    </div>
+			    </div>
+				<?php echo
+				$this->paginationControl(
+				$this->paginator,
+				'sliding',
+				array('partial/paginator', 'CanariumCore'),
+				$this->routeParams
+				) ?>
+	        </section>
+	    </div>
+	</div>
+</div>

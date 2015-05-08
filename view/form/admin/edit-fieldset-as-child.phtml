@@ -1,0 +1,126 @@
+<?php
+$form->setAttribute('action', $this->url('admin/form', array('action' => 'edit-fieldset-as-child', 'id' => $this->id)))
+	 ->prepare();
+
+$fields = $form->get('form-fieldset');
+$elementCollections = $fields->get('element');
+?>
+
+<div class="page-head">
+    <h3 class="m-b-less">
+        Edit Fieldset and Elements
+    </h3>
+</div>
+<?php echo $this->form()->openTag($form); ?>
+<div class="wrapper">
+	<div class="row">
+		<div class="col-xs-12">
+            <section class="panel">
+                <header class="panel-heading">
+                    Fieldset
+                </header>
+                
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="">Fieldset Name</label>
+                        <?php echo $this->formRow($fields->get('name')); ?>
+                    </div>      
+                    <div class="form-group">
+                        <label for="">Fieldset Label</label>
+                        <?php echo $this->formRow($fields->get('label')); ?>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Sort</label><br />
+                        <?php echo $this->formRow($fields->get('sort')); ?>
+                    </div>
+
+                </div>
+            </section>
+		</div>
+	</div>
+    <div class="row">
+        <div class="col-xs-12">
+            <section class="panel">
+                <header class="panel-heading head-border">
+                    Elements
+                    <span class="tools pull-right">
+                        <a class="btn btn-primary" href="#create-element" data-toggle="modal">Create Element</a>
+                        <div aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="create-element" class="modal fade in" style="display: none;"><div class="modal-backdrop fade in"></div>
+                            <div class="modal-dialog" style="width: 900px;">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                                        <h4 class="modal-title">Create new Element</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                         <iframe src="/admin/form/create-element/<?php echo $this->id?>" width="565" height="500" style="border:0"></iframe>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                     
+                    </span>
+                </header>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Label</th>
+                        <th>Class</th>
+                        <th>Options</th>
+                        <?php /* <th>Attributes</th> */ ?>
+                        <th>Sort</th>
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <?php foreach ($elementCollections as $col) { ?>
+                    <tr>
+                        <td><?php echo $col->get('id')->getValue(); ?></td>
+                        <td><?php echo $this->formRow($col->get('name')); ?></td>
+                        <td><?php echo $this->formRow($col->get('label')); ?></td>
+                        <td><?php echo $this->formRow($col->get('class')); ?></td>
+                        <td>
+                            <?php echo $this->formRow($col->get('options')); ?>
+                            <?php 
+                            $options = $col->get('options')->getValue();
+                           
+                            if (!empty($options)) {
+                                $optionsArr = unserialize($options);
+                                $valueOptions = implode("\n", $optionsArr['value_options']);
+                            } else {
+                                $valueOptions = '';
+                            }
+                            ?>
+                            <textarea class="value-options form-control" name="value-options[<?php echo $col->get('id')->getValue()?>]"><?php echo $valueOptions?></textarea>
+                            <small>Note: <em>One item per line</em></small>
+                            <br /><br />
+                            <strong>Attributes</strong>
+                            <?php echo $this->formRow($col->get('attributes')); ?>                        
+                        </td>
+                        <td>
+                            <?php echo $this->formRow($col->get('sort')); ?>
+                        </td>
+                        <td><a href="javascript:;" class="delete-entry" data-type='element' data-id="<?php echo $col->get('id')->getValue(); ?>"><button class="btn btn-primary btn-xs"><i class="fa fa-trash-o"></i></button></a></td>
+                    </tr>
+                    <?php } ?>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <section class="panel">
+                <?php 
+                echo $this->formSubmit($form->get('submit'));
+                echo $this->form()->closeTag();
+                ?>
+            </section>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,84 @@
+<?php
+$form->setAttribute('action', $this->url('admin/form', array('action' => 'create-fieldset-as-child', 'id' => $this->id)))
+	 ->prepare();
+
+$fields = $form->get('form-fieldset');
+$element = $fields->get('element');
+?>
+
+<div class="page-head">
+    <h3 class="m-b-less">
+        Create Fieldset and Elements
+    </h3>
+</div>
+<?php echo $this->form()->openTag($form); ?>
+<div class="wrapper">
+	<div class="row">
+		<div class="col-xs-12">
+            <section class="panel">
+                <header class="panel-heading">
+                    Fieldset
+                </header>
+                
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="">Fieldset Name</label>
+                        <?php echo $this->formRow($fields->get('name')); ?>
+                    </div>      
+                    <div class="form-group">
+                        <label for="">Fieldset  Label</label>
+                        <?php echo $this->formRow($fields->get('label')); ?>
+                    </div> 
+                </div>
+            </section>
+		</div>
+	</div>
+    <div class="row">
+        <div class="col-xs-12">
+            <section class="panel">
+                <header class="panel-heading head-border">
+                    Elements
+                </header>
+                <table class="table table-elements" >
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Label</th>
+                        <th>Class</th>
+                        <th>Options</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <?php foreach ($element as $k=>$elm) { ?>
+
+                    <tr>
+                        <td><?php echo $this->formRow($elm->get('name')); ?></td>
+                        <td><?php echo $this->formRow($elm->get('label')); ?></td>
+                        <td><?php echo $this->formRow($elm->get('class')); ?></td>
+                        <td>
+                            <?php echo $this->formRow($elm->get('options')); ?>
+                            <textarea class="value-options form-control" name="value-options"></textarea>
+                            <small>Note: <em>One item per line</em></small>
+                            <br /><br />
+                            <strong>Attributes</strong>
+                            <?php echo $this->formRow($elm->get('attributes')); ?>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <section class="panel">
+                <?php 
+                echo $this->formSubmit($form->get('submit'));
+                echo $this->form()->closeTag();
+                ?>
+            </section>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,100 @@
+<?php
+$form->setAttribute('action', $this->url('admin/form', array('action' => 'edit-form', 'id' => $this->id)))
+	 ->prepare();
+
+$fields = $form->get('form');
+?>
+<div class="page-head">
+    <h3 class="m-b-less">
+        Edit Form
+    </h3>
+</div>
+
+<div class="wrapper">
+	<div class="row">
+		<div class="col-xs-12">
+            <section class="panel">
+                <header class="panel-heading">
+                    Form
+                </header>
+                <?php echo $this->form()->openTag($form); ?>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="">Form Name</label>
+                        <?php echo $this->formRow($fields->get('name')); ?>
+                    </div>       
+                    <div class="form-group">
+                        <label for="">Form Label</label>
+                        <?php echo $this->formRow($fields->get('label')); ?>
+                    </div>
+                    <div class="form-group">
+                        <label for="">RedirectToPage</label>
+                        <?php echo $this->formRow($fields->get('redirect')); ?>
+                    </div>                     
+                </div>
+				<?php 
+				echo $this->formSubmit($form->get('submit'));
+				echo $this->form()->closeTag();
+				?>
+            </section>
+		</div>
+	</div>		
+	<div class="row">
+		<div class="col-xs-12">
+			<section class="panel">
+			    <header class="panel-heading head-border">
+			        Form Sections
+			        <span class="tools pull-right">
+                        <a href="<?php echo $this->url('admin/form',array('action' => 'create-section', 'id' => $this->id))?>" class="btn btn-primary">Create Sections/Fieldset</a>
+                    </span>
+			    </header>
+
+			    <table class="table">
+			        <thead>
+			        <tr>
+			            <th>ID</th>
+			            <th>Name</th>
+			            <th>Label</th>
+			            <th>Sort</th>
+			            <th>Action</th>
+			        </tr>
+			        </thead>
+			        <tbody>
+			        <?php 
+			        	foreach ($this->fieldset as $col) { 
+			        		if ($col->getParent()) continue;
+			        ?>
+			        <tr>
+			        	<td><?php echo $col->getId(); ?></td>
+			            <td><?php echo $col->getName(); ?></td>
+			            <td><?php echo $col->getLabel(); ?></td>
+			            <td><?php echo $col->getSort(); ?></td>
+			            <td>
+			            	<a href="<?php echo $this->url('admin/form',array('action' => 'edit-section', 'id' => $col->getId()))?>"><button class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></button></a>
+			            	<a href="<?php echo $this->url('admin/form',array('action' => 'create-fieldset-as-child', 'id' => $col->getId()))?>" alt="Create Fieldset"><button class="btn btn-primary btn-xs"><i class="fa fa-plus"></i></button></a>
+							<a href="javascript:;" class="delete-entry" data-type='fieldset' data-id="<?php echo $col->getId(); ?>"><button class="btn btn-primary btn-xs"><i class="fa fa-trash-o"></i></button></a>
+			            </td>
+			        </tr>
+
+				        <?php if ($col->getChildren()) { ?>
+					        <?php foreach ($col->getChildren() as $child) {?>
+						        <tr>
+						        	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $child->getId(); ?></td>
+						            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $child->getName(); ?></td>
+						            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $child->getLabel(); ?></td>
+						            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $child->getSort(); ?></td>
+						            <td>
+						            	<a href="<?php echo $this->url('admin/form',array('action' => 'edit-fieldset-as-child', 'id' => $child->getId()))?>"><button class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></button></a>
+										<a href="javascript:;" class="delete-entry" data-type='fieldset' data-id="<?php echo $child->getId(); ?>"><button class="btn btn-primary btn-xs"><i class="fa fa-trash-o"></i></button></a>
+						            </td>
+						        </tr>
+					        <?php } ?>
+				        <?php } ?>
+				     <?php } ?>
+			        <tbody>
+			    </table>
+			</section>
+		</div>
+	</div>
+
+</div>

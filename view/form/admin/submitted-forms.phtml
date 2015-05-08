@@ -1,0 +1,115 @@
+<div class="page-head">
+    <h3 class="m-b-less">
+        Form Results
+    </h3>
+</div>
+
+<div class="wrapper">
+	<div class="row">
+	    <div class="col-sm-12">
+	        <section class="panel">
+	            <header class="panel-heading ">
+	                Submitted Form List
+	                <span class="tools pull-right">
+	                    <a class="fa fa-repeat box-refresh" href="javascript:;"></a>
+	                    <?php /*<a class="t-close fa fa-times" href="javascript:;"></a> */ ?>
+	                </span>
+	            </header>
+		        <table class="table user-data-table data-table">
+		        <thead>
+		        <tr>
+					<th>User</th>
+					<th>Submitted Date</th>
+					<th>Type</th>
+					<th>Title</th>
+					<th>Action</th>
+		        </tr>
+		        </thead>
+		        <tbody>
+					<?php
+					foreach ($this->results as $row) {
+					?>
+			        <tr>
+			        	<td><?php echo $row->getUser()->getEmail() ?></td>
+			        	<td><?php echo $row->getDate()->format('d-m-Y H:i:s') ?></td>
+			        	<td><?php echo $row->getForm()->getName() ?></td>
+			        	<td><?php echo $row->getForm()->getLabel() ?></td>
+			        	<td>
+			        		<a href="<?=$this->url('admin/form',array('action' => 'user-form-data', 'id' => $row->getId()))?>"><button class="btn btn-primary btn-xs">View</button></a>
+			        	</td>
+					</tr>
+					<?php } ?>
+		        </tr>
+		        </tbody>
+		        </table>
+				<?php /*echo
+				$this->paginationControl(
+				$this->paginator,
+				'sliding',
+				array('partial/paginator', 'CanariumCore'),
+				$this->routeParams
+				) */ ?>
+	        </section>
+	    </div>
+	</div>
+
+	<div class="row">
+	    <div class="col-sm-12">
+	        <section class="panel">
+	            <header class="panel-heading ">
+	                Form List
+	                <span class="tools pull-right">
+	                    <a class="fa fa-repeat box-refresh" href="javascript:;"></a>
+	                    <?php /*<a class="t-close fa fa-times" href="javascript:;"></a> */ ?>
+	                </span>
+	            </header>
+
+				<table <table class="table form-table data-table">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Label</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach($this->forms as $entry) { ?>
+                <tr>
+                    <td><?php echo $entry->getId()?></td>
+                    <td><?php echo $entry->getName()?></td>
+                    <td><?php echo $entry->getLabel()?></td>
+                    <td>
+                    	<a href="<?=$this->url('admin/form',array('action' => 'form-results', 'id' => $entry->getId()))?>"><button class="btn btn-primary btn-xs">Results</button></a>
+                    	<a href="<?=$this->url('admin/form',array('action' => 'download-csv', 'id' => $entry->getId()))?>"><button class="btn btn-primary btn-xs">CSV</button></a>
+                    </td>
+                </tr>
+                <?php } ?>
+                </tbody>
+	            </table>
+	        </section>
+	    </div>
+	</div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('.user-data-table').dataTable( {
+	    "PaginationType": "bootstrap",
+	    //dom: '<"tbl-head clearfix"T>,<"tbl-top clearfix"lfr>,t,<"tbl-footer clearfix"<"tbl-info pull-left"i><"tbl-pagin pull-right"p>>',
+	    //tableTools: {
+	    //    "sSwfPath": "swf/copy_csv_xls_pdf.swf"
+	    //},
+        "order": [[ 1, "desc" ]]
+    } );
+
+    $('.form-table').dataTable( {
+	    "PaginationType": "bootstrap",
+	    //dom: '<"tbl-head clearfix"T>,<"tbl-top clearfix"lfr>,t,<"tbl-footer clearfix"<"tbl-info pull-left"i><"tbl-pagin pull-right"p>>',
+	    //tableTools: {
+	    //    "sSwfPath": "swf/copy_csv_xls_pdf.swf"
+	    //},
+        "order": [[ 1, "desc" ]]
+    } );
+} );
+</script>

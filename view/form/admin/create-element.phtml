@@ -1,0 +1,77 @@
+<link href="/assets/css/slidebars.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/assets/admin/css/style.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/assets/css/style.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/assets/css/style-responsive.css" media="screen" rel="stylesheet" type="text/css">
+<link href="/assets/js/switchery/switchery.min.css" media="screen" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/assets/js/jquery-1.11.1.min.js"></script>
+
+<?php 
+$fields = $form->get('form-element');
+$form
+ ->setAttribute('action', $this->url('admin/form', array('action' => 'create-element', 'id'=>$this->id)))
+ ->prepare()
+;
+?>
+<script>
+<?php if ($this->closeWindow) { ?>
+/*window.parent.$('#create-element').modal('toggle');*/
+parent.location.href=parent.location.href;
+<?php } ?>
+</script>
+
+
+<div class="row">
+	<div class="col-xs-12" style="background: #fff">
+        <section class="panel">
+            <?php echo $this->form()->openTag($form); ?>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-lg-1 col-sm-1 control-label" for="form-name">Element Name</label>
+                    <div class="col-lg-11">
+                        <?php echo $this->formRow($fields->get('name')); ?>
+                        <p></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-1 col-sm-1 control-label" for="form-label">Element Label</label>
+                    <div class="col-lg-11">
+                        <?php echo $this->formRow($fields->get('label')); ?>
+                        <p></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-1 col-sm-1 control-label" for="form-label">Input Type</label>
+                    <div class="col-lg-11">
+                        <?php echo $this->formRow($fields->get('class')); ?>
+                        <p></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-1 col-sm-1 control-label" for="form-label">Options</label>
+                    <div class="col-lg-11">
+                        <?php echo $this->formRow($fields->get('options')); ?>
+                        <textarea class="value-options form-control" name="value-options"></textarea><br />
+                        <small>Note: <em>One item per line</em></small>
+                    </div>
+                </div>                    
+            </div>
+			<?php 
+			echo $this->formSubmit($form->get('submit'));
+			echo $this->form()->closeTag();
+			?>
+        </section>
+	</div>
+</div>
+
+
+<script type="text/javascript" src="/assets/js/jquery-migrate.js"></script>
+<script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/assets/js/modernizr.min.js"></script>
+<script type="text/javascript" src="/assets/js/jquery.nicescroll.js"></script>
+<script type="text/javascript" src="/assets/js/slidebars.min.js"></script>
+<script type="text/javascript" src="/assets/js/switchery/switchery.min.js"></script>
+<script type="text/javascript" src="/assets/js/switchery/switchery-init.js"></script>
+<script type="text/javascript" src="/assets/js/sparkline/jquery.sparkline.js"></script>
+<script type="text/javascript" src="/assets/js/sparkline/sparkline-init.js"></script>
+<script type="text/javascript" src="/assets/js/scripts.js"></script>
+<script type="text/javascript" src="/assets/admin/js/script.js"></script>
