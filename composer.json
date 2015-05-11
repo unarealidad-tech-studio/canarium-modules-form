@@ -38,7 +38,10 @@
     "autoload": {
         "psr-0": {
             "Form\\": "src/"
-        }
+        },
+        "classmap": [
+            "./Module.php"
+        ]
     }
 
 }
