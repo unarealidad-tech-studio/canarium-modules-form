@@ -17,79 +17,40 @@ class FormController extends AbstractActionController
 		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 		$entity = $objectManager->getRepository('Form\Entity\Form')->find($id);
 
-		$form = new \Zend\Form\Form($entity->getName());
-		$form->setLabel($entity->getLabel());
-		foreach($entity->getFieldset() as $fieldsetEntity){
-			$class = $fieldsetEntity->getClass();
-			$fieldset = new $class($fieldsetEntity->getName());
-			$fieldset->setLabel($fieldsetEntity->getLabel());
-			foreach($fieldsetEntity->getElement() as $elementEntity){
-				$elementClass = $elementEntity->getClass();
-				$element = new $elementClass($elementEntity->getId());
-				$element->setLabel($elementEntity->getLabel());
-				if ($elementEntity->getOptions()) $element->setOptions(unserialize($elementEntity->getOptions()));
-					$element->setAttributes($elementEntity->getAttributesForForm());
-				$fieldset->add($element);
-			}
-
-			$form->add($fieldset);
-		}
+		$form = $this->getFormService()->getZendFormCounterpart($entity);
 
 		if ($this->request->isPost()) {
 			$post = array_merge_recursive(
 				$this->request->getPost()->toArray(),
 				$this->request->getFiles()->toArray()
 			);
+
 			$form->setData($post);
-			#if ($form->isValid()) {
-				$parentData = new \Form\Entity\ParentData();
-				$parentData->setForm($entity);
-				$parentData->setUser($this->zfcUserAuthentication()->getIdentity());
-				$collection = new \Doctrine\Common\Collections\ArrayCollection();
-				$collectionUpload = new \Doctrine\Common\Collections\ArrayCollection();
-				$form->setData($this->params()->fromPost());
-				foreach($this->params()->fromPost() as $fieldsetFromPost) {
-					foreach($fieldsetFromPost as $k => $v){
-						$element = $objectManager->getRepository('Form\Entity\Element')->find($k);
-						$data = new \Form\Entity\Data();
-						$data->setElement($element);
-						$data->setValue(serialize($v));
-						$collection->add($data);
-					}
-				}
 
+			$parentData = new \Form\Entity\ParentData();
+			$parentData->setForm($entity);
+			$parentData->setUser($this->zfcUserAuthentication()->getIdentity());
 
-				$files = $this->getRequest()->getFiles();
-				$dir = "./data/uploads/tmp/";
-				if(!file_exists($dir)){
-					if(!mkdir($dir, 0755, true))
-						throw new \Exception("Failed to create upload folders");
-				}
-				$filter = new \Zend\Filter\File\RenameUpload($dir);
-				$filter->setUseUploadName(true);
-				foreach($this->getRequest()->getFiles() as $files){
-					foreach($files as $file){
-						$upload = new \Form\Entity\Upload($this->getServiceLocator());
-						$upload->setParentData($parentData);
-						$upload->setName($file['name']);
-						$upload->setType($file['type']);
-						$upload->setTmpName($file['tmp_name']);
-						$upload->setError($file['error']);
-						$upload->setSize($file['size']);
-						$collectionUpload->add($upload);
+			$form->setData($this->params()->fromPost());
 
-						$filter->filter($file);
-					}
-				}
+			$data_objects = $this->getFormService()->getDataObjectsFromArray(
+				$this->params()->fromPost()
+			);
 
-				$parentData->addData($collection);
-				$parentData->addUploads($collectionUpload);
+			$parentData->addData($data_objects);
 
-				$objectManager->persist($parentData);
-				$objectManager->flush();
-				return $this->redirect()->toUrl($this->redirectUrl);
-			}
-		#}
+			$upload_objects = $this->getFormService()->getUploadObjectsFromArray(
+				$this->getRequest()->getFiles(),
+				$parentData
+			);
+
+			$parentData->addUploads($upload_objects);
+
+			$objectManager->persist($parentData);
+			$objectManager->flush();
+
+			return $this->redirect()->toUrl($this->redirectUrl);
+		}
 
 		$view = new ViewModel();
 		$view->form = $form;
@@ -125,4 +86,18 @@ class FormController extends AbstractActionController
         $response->setHeaders($headers);
         return $response;
 	}
+
+	public function getFormService()
+    {
+        if (!$this->formService) {
+            $this->formService = $this->getServiceLocator()->get('form_form_service');
+        }
+        return $this->formService;
+    }
+
+    public function setFormService(FormService $formService)
+    {
+        $this->formService = $formService;
+        return $this;
+    }
 }

@@ -64,7 +64,7 @@ class Module
     {
         return array(
             'invokables' => array(
-                'form_form_service' => 'Form\Service\Form',
+                'form_form_service' => 'Form\Service\Form'
             )
         );
     }
