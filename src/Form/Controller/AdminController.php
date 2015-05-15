@@ -1,11 +1,4 @@
 <?php
-/**
- * Zend Framework (http://framework.zend.com/)
- *
- * @link      http://github.com/zendframework/ZendSkeletonApplication for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
- */
 
 namespace Form\Controller;
 
@@ -17,29 +10,35 @@ use Form\Entity\Fieldset;
 use Form\Entity\Element;
 use Form\Entity\ElementAttribute;
 
+use Form\Service\Form as FormService;
+
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use Zend\Paginator\Paginator as ZendPaginator;
 
 class AdminController extends AbstractActionController
 {
-	
+	/**
+     * @var FormService
+     */
+    protected $formService;
+
     public function indexAction()
 	{
 		$view = new ViewModel();
 		return $view;
     }
-	
 
-	public function createFormAction() 
+
+	public function createFormAction()
 	{
 		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 		$form = new \Form\Form\FormForm($objectManager);
 		$entity = new Form();
 		$form->bind($entity);
-	
+
 		if ($this->request->isPost()) {
-			$form->setData($this->request->getPost()); 
+			$form->setData($this->request->getPost());
 			if ($form->isValid()) {
 				$objectManager->persist($entity);
 				$objectManager->flush();
@@ -50,7 +49,7 @@ class AdminController extends AbstractActionController
 			    }
 			}
 		}
-		
+
 		$view = new ViewModel();
 		$view->form = $form;
 		return $view;
@@ -65,11 +64,11 @@ class AdminController extends AbstractActionController
 		$paginator = new ZendPaginator(new DoctrinePaginator($doctrinePaginator));
 		$paginator->setCurrentPageNumber( $page );
 		$paginator->setItemCountPerPage(10);
-		
+
 		$view = new ViewModel();
 		$view->paginator = $paginator;
 		$view->routeParams = array('route' => 'admin/manage','urlParams' => array());
-		return $view;	
+		return $view;
 	}
 
 
@@ -168,7 +167,7 @@ class AdminController extends AbstractActionController
 	public function createFieldsetAsChildAction() {
 		$id = (int) $this->params()->fromRoute('id', 0);
 		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-		
+
 		$partentEntity = $objectManager->getRepository('Form\Entity\Fieldset')->find($id);
 		$formId = $partentEntity->getForm()->getId();
 		$formEntity = $objectManager->getRepository('Form\Entity\Form')->find($formId);
@@ -191,34 +190,11 @@ class AdminController extends AbstractActionController
 				$query = $objectManager->createQuery("SELECT a FROM Form\Entity\Element a WHERE a.fieldset = :id ORDER BY a.id DESC")
 									   ->setParameter('id',$lastId);
 				$element = $query->getResult();
-				foreach ($element as $row) {
-					if (!empty($post['value-options'])) {
-						$multi = array(
-								'\Zend\Form\Element\Checkbox',
-								'\Zend\Form\Element\MultiCheckbox',
-								'\Zend\Form\Element\Radio');
-						$class = $row->getClass();	
-						if (in_array($class, $multi)) {
-							$ops = explode("\r\n",$post['value-options']);
-							$ops = array_filter($ops, 'trim');
 
-							$kvOps = array();
-							foreach ($ops as $k=>$v) {
-								$kvOps[$v] = $v;
-							}
+				$this->getFormService()->updateFieldSetElementOptions($element, $post['value-options']);
 
-							$ops = array('value_options'=>$kvOps);
-							$row->setOptions(serialize($ops));
-						} else {
-							$ops = explode("\r\n",$post['value-options']);
-							$ops = array_filter($ops, 'trim');
-							$ops = array('value_options'=>$ops);
-							$row->setOptions(serialize($ops));
-						}
-						$objectManager->persist($row);
-						$objectManager->flush();
-					}
-				}
+				$objectManager->flush();
+
 				return $this->redirect()->toRoute('admin/form', array('action'=>'edit-form', 'id'=>$formId));
 			} else {
 			    foreach ($form->getMessages() as $messageId => $message) {
@@ -226,7 +202,7 @@ class AdminController extends AbstractActionController
 			    }
 			}
 		}
-		
+
 		$view = new ViewModel();
 		$view->id = $id;
 		$view->form = $form;
@@ -247,41 +223,13 @@ class AdminController extends AbstractActionController
 			$post = $this->request->getPost();
 			$form->setData($post);
 			if ($form->isValid()) {
-				$objectManager->persist($entity);
-				$objectManager->flush();
-
 				$query = $objectManager->createQuery("SELECT a FROM Form\Entity\Element a WHERE a.fieldset = :id ORDER BY a.sort DESC")
 									   ->setParameter('id', $entity->getId());
 				$element = $query->getResult();
-				foreach ($element as $row) {
-					if (isset($post['value-options'][$row->getId()])) {
-						$multi = array(
-								'\Zend\Form\Element\Checkbox',
-								'\Zend\Form\Element\MultiCheckbox',
-								'\Zend\Form\Element\Select',
-								'\Zend\Form\Element\Radio');
-						$class = $row->getClass();
-						if (in_array($class, $multi)) {
-							$ops = explode("\r\n",$post['value-options'][$row->getId()]);
-							$ops = array_filter($ops, 'trim');
 
-							$kvOps = array();
-							foreach ($ops as $k=>$v) {
-								$kvOps[$v] = $v;
-							}
+				$this->getFormService()->updateFieldSetElementOptions($element, $post['value-options']);
 
-							$ops = array('value_options'=>$kvOps);
-							$row->setOptions(serialize($ops));
-						} else {
-							$ops = explode("\r\n",$post['value-options'][$row->getId()]);
-							$ops = array_filter($ops, 'trim');
-							$ops = array('value_options'=>$ops);
-							$row->setOptions(serialize($ops));
-						}
-						$objectManager->persist($row);
-						$objectManager->flush();
-					}
-				}
+				$objectManager->flush();
 
 				return $this->redirect()->toRoute('admin/form', array('action'=>'edit-fieldset-as-child', 'id'=>$id));
 			 } else {
@@ -312,35 +260,15 @@ class AdminController extends AbstractActionController
 		$closeWindow = 0;
 		if ($this->request->isPost()) {
 			$post = $this->request->getPost();
-			$form->setData($post); 
+			$form->setData($post);
 			if ($form->isValid()) {
 				if (isset($post['value-options'])) {
 
-					$multi = array(
-							'\Zend\Form\Element\Checkbox',
-							'\Zend\Form\Element\MultiCheckbox',
-							'\Zend\Form\Element\Select',
-							'\Zend\Form\Element\Radio');
-
-					if (in_array($post['form-element']['class'], $multi)) {
-						$ops = explode("\r\n",$post['value-options']);
-						$ops = array_filter($ops, 'trim');
-
-						$kvOps = array();
-						foreach ($ops as $k=>$v) {
-							$kvOps[$v] = $v;
-						}
-
-						$ops = array('value_options'=>$kvOps);
-						$entity->setOptions(serialize($ops));
-					} else {
-						$ops = explode("\r\n",$post['value-options']);
-						$ops = array_filter($ops, 'trim');
-						$ops = array('value_options'=>$ops);
-						$entity->setOptions(serialize($ops));
-					}
 					$objectManager->persist($entity);
-					$objectManager->flush();						
+
+					$this->getFormService()->updateFieldSetElementOptions($entity, $post['value-options']);
+
+					$objectManager->flush();
 				}
 
 				$closeWindow = 1;
@@ -350,7 +278,7 @@ class AdminController extends AbstractActionController
 			    }
 			}
 		}
-		
+
 		$view = new ViewModel();
 		$view->setTerminal(true);
 		$view->id = $id;
@@ -366,7 +294,7 @@ class AdminController extends AbstractActionController
 		$msg = array();
 		if (!empty($id)) {
 			$objectManager->remove($entity);
-			$objectManager->flush();				
+			$objectManager->flush();
 			$msg['status'] = 'success';
 		}
 
@@ -385,7 +313,7 @@ class AdminController extends AbstractActionController
 		if (!empty($id)) {
 			//$objectManager->remove($element);
 			$objectManager->remove($entity);
-			$objectManager->flush();				
+			$objectManager->flush();
 			$msg['status'] = 'success';
 		}
 
@@ -393,7 +321,7 @@ class AdminController extends AbstractActionController
 		$response->setStatusCode(200);
 		$response->setContent(json_encode($msg));
 		return $response;
-	}	
+	}
 
 	public function resultsAction() {
 		$id = (int) $this->params()->fromRoute('id', 0);
@@ -407,7 +335,7 @@ class AdminController extends AbstractActionController
 		$view = new ViewModel();
 		$view->form = $form;
 		$view->results = $results;
-		return $view;	
+		return $view;
 	}
 
 	public function submittedFormsAction() {
@@ -420,7 +348,7 @@ class AdminController extends AbstractActionController
 		$paginator = new ZendPaginator(new DoctrinePaginator($doctrinePaginator));
 		$paginator->setCurrentPageNumber( $page );
 		$paginator->setItemCountPerPage(10);*/
-		
+
 		$query = $objectManager->createQuery('SELECT a FROM Form\Entity\Form a ORDER BY a.id DESC');
 		$forms = $query->getResult();
 
@@ -428,7 +356,7 @@ class AdminController extends AbstractActionController
 		//$view->paginator = $paginator;
 		$view->results = $results;
 		$view->forms = $forms;
-		return $view;		
+		return $view;
 	}
 
 	public function formResultsAction() {
@@ -451,7 +379,7 @@ class AdminController extends AbstractActionController
 		//$view->results = $results;
 		$view->paginator = $paginator;
 		$view->routeParams = array('route' => 'admin/form','urlParams' => array('action'=>'form-results','id'=>$id));
-		return $view;	
+		return $view;
 	}
 
 	public function userFormDataAction() {
@@ -461,12 +389,12 @@ class AdminController extends AbstractActionController
 
 		$view = new ViewModel();
 		$view->data = $data;
-		return $view;	
+		return $view;
 	}
 
 	public function reportsAction() {
 		$view = new ViewModel();
-		return $view;		
+		return $view;
 	}
 
 	public function downloadCsvAction() {
@@ -474,7 +402,7 @@ class AdminController extends AbstractActionController
 		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 		$query = $objectManager->createQuery("SELECT a FROM Form\Entity\ParentData a WHERE a.form = :id ORDER BY a.id DESC")
 								->setParameter('id',$id);
-								
+
 		$results = $query->getResult();
 
 		foreach ($results as $row) {
@@ -499,7 +427,7 @@ class AdminController extends AbstractActionController
 	    $headers = $response->getHeaders();
 	    $headers->addHeaderLine('Content-Type', 'text/csv')
 	            ->addHeaderLine(
-	                'Content-Disposition', 
+	                'Content-Disposition',
 	                sprintf("attachment; filename=\"%s\"", $filename)
 	            )
 	            ->addHeaderLine('Accept-Ranges', 'bytes')
@@ -509,4 +437,18 @@ class AdminController extends AbstractActionController
 
 	    return $response;
 	}
+
+	public function getFormService()
+    {
+        if (!$this->formService) {
+            $this->formService = $this->getServiceLocator()->get('form_form_service');
+        }
+        return $this->formService;
+    }
+
+    public function setFormService(FormService $formService)
+    {
+        $this->formService = $formService;
+        return $this;
+    }
 }

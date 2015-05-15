@@ -1,11 +1,4 @@
 <?php
-/**
- * Zend Framework (http://framework.zend.com/)
- *
- * @link      http://github.com/zendframework/ZendSkeletonApplication for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
- */
 
 namespace Form\Controller;
 
@@ -13,15 +6,17 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Http\Headers;
 use Zend\Http\Response\Stream;
+
+
 class FormController extends AbstractActionController
 {
 	public $redirectUrl = '/form/thank-you';
-	
+
     public function indexAction(){
 		$id = $this->params()->fromRoute('id',0);
 		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 		$entity = $objectManager->getRepository('Form\Entity\Form')->find($id);
-		
+
 		$form = new \Zend\Form\Form($entity->getName());
 		$form->setLabel($entity->getLabel());
 		foreach($entity->getFieldset() as $fieldsetEntity){
@@ -36,10 +31,10 @@ class FormController extends AbstractActionController
 					$element->setAttributes($elementEntity->getAttributesForForm());
 				$fieldset->add($element);
 			}
-			
+
 			$form->add($fieldset);
 		}
-		
+
 		if ($this->request->isPost()) {
 			$post = array_merge_recursive(
 				$this->request->getPost()->toArray(),
@@ -62,8 +57,8 @@ class FormController extends AbstractActionController
 						$collection->add($data);
 					}
 				}
-				
-				
+
+
 				$files = $this->getRequest()->getFiles();
 				$dir = "./data/uploads/tmp/";
 				if(!file_exists($dir)){
@@ -82,14 +77,14 @@ class FormController extends AbstractActionController
 						$upload->setError($file['error']);
 						$upload->setSize($file['size']);
 						$collectionUpload->add($upload);
-						
+
 						$filter->filter($file);
 					}
 				}
-				
+
 				$parentData->addData($collection);
 				$parentData->addUploads($collectionUpload);
-				
+
 				$objectManager->persist($parentData);
 				$objectManager->flush();
 				return $this->redirect()->toUrl($this->redirectUrl);
@@ -100,14 +95,14 @@ class FormController extends AbstractActionController
 		$view->form = $form;
 		return $view;
 	}
-	
+
 	public function thankYouAction(){
-		
+
 	}
-	
+
 	public function downloadAction() {
 		$id = (int) $this->params()->fromRoute('id', 0);
-		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');		
+		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 		$upload = $objectManager->getRepository('Form\Entity\Upload')->find($id);
 		if(!$upload){
 			throw new \ErrorHandler\Exception\NotFoundException('File Not Found');

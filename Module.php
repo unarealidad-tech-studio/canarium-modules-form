@@ -39,7 +39,7 @@ class Module
             ),
         );
     }
-	
+
 	public function getViewHelperConfig()
 	{
 		return array(
@@ -59,4 +59,13 @@ class Module
 			),
 		);
 	}
+
+    public function getServiceConfig()
+    {
+        return array(
+            'invokables' => array(
+                'form_form_service' => 'Form\Service\Form',
+            )
+        );
+    }
 }
