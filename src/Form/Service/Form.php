@@ -120,11 +120,17 @@ class Form implements ServiceLocatorAwareInterface
 
         $filter = new RenameUpload($dir);
         $filter->setUseUploadName(true);
+        $filter->setOverwrite(true);
 
         $collectionUpload = new ArrayCollection();
 
         foreach($upload_array as $files){
             foreach($files as $file){
+
+                if ($file['error'] != 0) {
+                    continue;
+                }
+
                 $upload = new Upload($this->getServiceLocator());
 
                 if ($parent) {
