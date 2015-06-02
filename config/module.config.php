@@ -7,7 +7,7 @@ return array(
 		  'cache' => 'array',
 		  'paths' => array(__DIR__ . '/../src/Form/Entity')
 		),
-	
+
 		'orm_default' => array(
 		  'drivers' => array(
 			'Form\Entity' => 'form_entities'
@@ -22,19 +22,16 @@ return array(
 			'Admin\Form' => 'Form\Controller\AdminController',
         ),
     ),
-	
+
 	'bjyauthorize' => array(
 		'guards' => array(
-			'BjyAuthorize\Guard\Route' => array(
-				array('route' => 'form', 'roles' => array('user','guest')),
-				array('route' => 'admin/form', 'roles' => array('admin')),
-			),
 			'BjyAuthorize\Guard\Controller' => array(
-				array('controller' => 'Form',array(), 'roles' => array('user')),
+				array('controller' => 'Form', 'roles' => array('user', 'guest')),
+                array('controller' => 'Admin\Form', 'roles' => array('user', 'admin')),
             ),
 		),
 	),
-	
+
 	'router' => array(
         'routes' => array(
 			'admin' => array(
@@ -55,7 +52,7 @@ return array(
                     ),
 				),
 			),
-			
+
 			'form' => array(
 				'type'    => 'Segment',
 				'options' => array(
@@ -71,18 +68,18 @@ return array(
 				),
 				'may_terminate' => true,
 			),
-			
-			
+
+
         ),
     ),
-	
+
     'view_manager' => array(
         'template_path_stack' => array(
             'form' => __DIR__ . '/../view',
         ),
 		'template_map' => array(
-	        'download/csv' => 
-	            __DIR__ . 
+	        'download/csv' =>
+	            __DIR__ .
 	            '/../view/form/admin/download/csv.phtml',
         ),
     ),
