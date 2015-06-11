@@ -64,7 +64,7 @@ class FormFieldset extends Fieldset implements InputFilterProviderInterface
 
 	public function getInputFilterSpecification(){
 		return array(
-			'redirect' => array('required' => true)
+			'redirect' => array('required' => false)
         );
 	}    
 }
