@@ -12,10 +12,9 @@ use Form\Entity\Data;
 use Form\Entity\Upload;
 use Form\Entity\ParentData;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Persistence\ObjectManager;
 
-use Form\Entity\Element;
 
 class Form implements ServiceLocatorAwareInterface
 {
@@ -24,7 +23,10 @@ class Form implements ServiceLocatorAwareInterface
      */
     protected $serviceLocator;
 
-    protected $objectRepository;
+    /**
+     * @var ObjectManager
+     */
+    protected $objectManager;
 
     public function updateFieldSetElementOptions($elements, $data)
     {
@@ -69,8 +71,16 @@ class Form implements ServiceLocatorAwareInterface
         }
     }
 
-    public function getZendFormCounterpart(CanariumForm $entity)
+    public function getZendFormCounterpart(CanariumForm $entity, ParentData $data = null)
     {
+        $currentData = array();
+
+        if ($data) {
+            foreach ($data->getData() as $rowData) {
+                $currentData[$rowData->getElement()->getId()] = unserialize($rowData->getValue());
+            }
+        }
+
         $form = new \Zend\Form\Form($entity->getName());
         $form->setLabel($entity->getLabel());
         foreach($entity->getFieldset() as $fieldsetEntity){
@@ -81,6 +91,9 @@ class Form implements ServiceLocatorAwareInterface
                 $elementClass = $elementEntity->getClass();
                 $element = new $elementClass($elementEntity->getId());
                 $element->setLabel($elementEntity->getLabel());
+                if (isset($currentData[$elementEntity->getId()])) {
+                    $element->setValue($currentData[$elementEntity->getId()]);
+                }
                 if ($elementEntity->getOptions()) $element->setOptions(unserialize($elementEntity->getOptions()));
                     $element->setAttributes($elementEntity->getAttributesForForm());
                 $fieldset->add($element);
@@ -92,18 +105,38 @@ class Form implements ServiceLocatorAwareInterface
         return $form;
     }
 
-    public function getDataObjectsFromArray($data_array)
+    public function getDataObjectsFromArray($data_array, ParentData $data = null)
     {
         $collection = new ArrayCollection();
 
-        foreach($data_array as $fieldsetFromPost) {
-            foreach($fieldsetFromPost as $k => $v){
-                $element = $this->getObjectRepository()->find($k);
+        $currentData = array();
 
-                $data_object = new Data();
-                $data_object->setElement($element);
-                $data_object->setValue(serialize($v));
-                $collection->add($data_object);
+        if ($data) {
+            foreach ($data->getData() as $rowData) {
+                $currentData[$rowData->getElement()->getId()] = $rowData;
+            }
+        }
+
+        foreach($data_array as $fieldsetFromPost) {
+
+            if (!is_array($fieldsetFromPost)) {
+                continue;
+            }
+
+            foreach($fieldsetFromPost as $k => $v){
+                $element = $this->getObjectManager()->getRepository('Form\Entity\Element')->find($k);
+
+                $data_object = null;
+
+                if (isset($currentData[$k])) {
+                    $data_object = $currentData[$k];
+                    $data_object->setValue(serialize($v));
+                } else {
+                    $data_object = new Data();
+                    $data_object->setElement($element);
+                    $data_object->setValue(serialize($v));
+                    $collection->add($data_object);
+                }
             }
         }
 
@@ -152,14 +185,11 @@ class Form implements ServiceLocatorAwareInterface
         return $collectionUpload;
     }
 
-    public function getObjectRepository()
+    public function getFormByName($name)
     {
-        if (empty($this->objectRepository)) {
-            $entityManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-            $this->objectRepository = $entityManager->getRepository('Form\Entity\Element');
-        }
-
-        return $this->objectRepository;
+        return $this->getObjectManager()->getRepository('Form\Entity\Form')->findOneBy(array(
+            'name' => $name
+        ));
     }
 
     /**
@@ -181,6 +211,21 @@ class Form implements ServiceLocatorAwareInterface
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    public function getObjectManager()
+    {
+        if (!$this->objectManager) {
+            $this->objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        }
+
+        return $this->objectManager;
+    }
+
+    public function setObjectManager(ObjectManager $objectManager)
+    {
+        $this->objectManager = $objectManager;
         return $this;
     }
 
