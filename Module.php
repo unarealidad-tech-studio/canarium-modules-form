@@ -11,8 +11,9 @@ namespace Form;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
+use ZF\Apigility\Provider\ApigilityProviderInterface;
 
-class Module
+class Module implements ApigilityProviderInterface
 {
     public function onBootstrap(MvcEvent $e)
     {
