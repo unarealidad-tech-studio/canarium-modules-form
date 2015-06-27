@@ -185,6 +185,47 @@ class Form implements ServiceLocatorAwareInterface
         return $collectionUpload;
     }
 
+    public function findFormElementByName($name, CanariumForm $form = null)
+    {
+        $results = $this->getObjectManager()->getRepository('Form\Entity\Element')->findBy(array(
+            'name' => $name
+        ));
+
+        if ($results && $form) {
+            foreach ($results as $result) {
+                if ($result->getFieldset()->getForm()->getId() == $form->getId()) {
+                    return $result;
+                }
+            }
+        }
+
+        return ($results ? $results[0] : null);
+    }
+
+    public function createParentDataFromArray(CanariumForm $form, array $data)
+    {
+        //This will only support one dimensional arrays for now
+
+        $formData = new ParentData();
+        $formData->setForm($form);
+
+        $this->getObjectManager()->persist($formData);
+
+        foreach ($data as $name => $value) {
+            $currentFormElement = $this->findFormElementByName($name, $form);
+            if ($currentFormElement) {
+                $currentData = new Data();
+                $currentData->setValue(serialize($value));
+                $currentData->setElement($currentFormElement);
+                $currentData->setParentData($formData);
+
+                $this->getObjectManager()->persist($currentData);
+            }
+        }
+
+        return $formData;
+    }
+
     public function getFormByName($name)
     {
         return $this->getObjectManager()->getRepository('Form\Entity\Form')->findOneBy(array(
