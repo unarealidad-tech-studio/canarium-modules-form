@@ -210,6 +210,13 @@ return array(
                         2 => 'admin',
                     ),
                 ),
+                25 => array(
+                    'controller' => 'Form\\V1\\Rest\\Sync\\Controller',
+                    'roles' => array(
+                        1 => 'user',
+                        2 => 'admin',
+                    ),
+                ),
             ),
         ),
     ),
@@ -293,6 +300,15 @@ return array(
                     ),
                 ),
             ),
+            'form.rest.sync' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/api/form/:form_name/sync/parent-data[/:parent_data_id]',
+                    'defaults' => array(
+                        'controller' => 'Form\\V1\\Rest\\Sync\\Controller',
+                    ),
+                ),
+            ),
         ),
     ),
     'view_manager' => array(
@@ -310,6 +326,7 @@ return array(
             2 => 'form.rest.doctrine.fieldset',
             3 => 'form.rest.doctrine.data',
             4 => 'form.rest.doctrine.form',
+            5 => 'form.rest.sync',
         ),
     ),
     'zf-rest' => array(
@@ -428,6 +445,30 @@ return array(
             'collection_class' => 'Form\\V1\\Rest\\Form\\FormCollection',
             'service_name' => 'Form',
         ),
+        'Form\\V1\\Rest\\Sync\\Controller' => array(
+            'listener' => 'Form\\V1\\Rest\\Sync\\SyncResource',
+            'route_name' => 'form.rest.sync',
+            'route_identifier_name' => 'parent_data_id',
+            'collection_name' => 'data',
+            'entity_http_methods' => array(
+                0 => 'GET',
+                1 => 'PATCH',
+                2 => 'PUT',
+                3 => 'DELETE',
+            ),
+            'collection_http_methods' => array(
+                0 => 'GET',
+                1 => 'POST',
+            ),
+            'collection_query_whitelist' => array(
+                0 => 'ids_to_exclude',
+            ),
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => 'Form\\V1\\Rest\\Sync\\SyncEntity',
+            'collection_class' => 'Form\\V1\\Rest\\Sync\\SyncCollection',
+            'service_name' => 'Sync',
+        ),
     ),
     'zf-content-negotiation' => array(
         'controllers' => array(
@@ -436,6 +477,7 @@ return array(
             'Form\\V1\\Rest\\Fieldset\\Controller' => 'HalJson',
             'Form\\V1\\Rest\\Data\\Controller' => 'HalJson',
             'Form\\V1\\Rest\\Form\\Controller' => 'HalJson',
+            'Form\\V1\\Rest\\Sync\\Controller' => 'HalJson',
         ),
         'accept-whitelist' => array(
             'Form\\V1\\Rest\\ParentData\\Controller' => array(
@@ -479,6 +521,19 @@ return array(
             ),
             'Form\\V1\\Rest\\Form\\Controller' => array(
                 0 => 'application/json',
+            ),
+        ),
+        'accept_whitelist' => array(
+            'Form\\V1\\Rest\\Sync\\Controller' => array(
+                0 => 'application/vnd.form.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ),
+        ),
+        'content_type_whitelist' => array(
+            'Form\\V1\\Rest\\Sync\\Controller' => array(
+                0 => 'application/vnd.form.v1+json',
+                1 => 'application/json',
             ),
         ),
     ),
@@ -549,6 +604,42 @@ return array(
                 'is_collection' => true,
                 'max_depth' => 2,
             ),
+            'Form\\V1\\Rest\\Sync\\SyncEntity' => array(
+                'entity_identifier_name' => 'id',
+                'route_name' => 'form.rest.sync',
+                'route_identifier_name' => 'sync_id',
+                'hydrator' => 'Zend\\Stdlib\\Hydrator\\ArraySerializable',
+            ),
+            'Form\\V1\\Rest\\Sync\\SyncCollection' => array(
+                'entity_identifier_name' => 'id',
+                'route_name' => 'form.rest.sync',
+                'route_identifier_name' => 'sync_id',
+                'is_collection' => true,
+            ),
+            'Form\\Api\\V1\\Rest\\Sync\\Entity' => array(
+                'entity_identifier_name' => 'id',
+                'route_name' => 'form.rest.sync',
+                'route_identifier_name' => 'parent_data_id',
+                'hydrator' => 'Zend\\Stdlib\\Hydrator\\ClassMethods',
+            ),
+            'Form\\Api\\V1\\Rest\\Sync\\Collection' => array(
+                'entity_identifier_name' => 'id',
+                'route_name' => 'form.rest.sync',
+                'route_identifier_name' => 'parent_data_id',
+                'is_collection' => true,
+            ),
+            'Form\\V1\\Rest\\Sync\\Entity' => array(
+                'entity_identifier_name' => 'id',
+                'route_name' => 'form.rest.sync',
+                'route_identifier_name' => 'parent_data_id',
+                'hydrator' => 'Zend\\Stdlib\\Hydrator\\ClassMethods',
+            ),
+            'Form\\V1\\Rest\\Sync\\Collection' => array(
+                'entity_identifier_name' => 'id',
+                'route_name' => 'form.rest.sync',
+                'route_identifier_name' => 'parent_data_id',
+                'is_collection' => true,
+            ),
         ),
     ),
     'zf-apigility' => array(
@@ -583,7 +674,7 @@ return array(
             'strategies' => array(
                 'data' => 'ZF\\Apigility\\Doctrine\\Server\\Hydrator\\Strategy\\CollectionExtract',
                 'uploads' => 'ZF\\Apigility\\Doctrine\\Server\\Hydrator\\Strategy\\CollectionExtract',
-                'children' => 'ZF\\Apigility\\Doctrine\\Server\\Hydrator\\Strategy\\CollectionExtract'
+                'children' => 'ZF\\Apigility\\Doctrine\\Server\\Hydrator\\Strategy\\CollectionExtract',
             ),
             'use_generated_hydrator' => true,
         ),
@@ -631,6 +722,9 @@ return array(
         ),
         'Form\\V1\\Rest\\ParentData\\Controller' => array(
             'input_filter' => 'Form\\V1\\Rest\\ParentData\\Validator',
+        ),
+        'Form\\V1\\Rest\\Sync\\Controller' => array(
+            'input_filter' => 'Form\\V1\\Rest\\Sync\\Validator',
         ),
     ),
     'input_filter_specs' => array(
@@ -810,6 +904,53 @@ return array(
                 'filters' => array(),
                 'validators' => array(),
             ),
+        ),
+        'Form\\V1\\Rest\\Sync\\Validator' => array(
+            0 => array(
+                'required' => false,
+                'validators' => array(),
+                'filters' => array(),
+                'name' => 'id',
+                'description' => 'The id of the current parent data to sync',
+            ),
+            1 => array(
+                'required' => false,
+                'validators' => array(),
+                'filters' => array(),
+                'name' => 'user_id',
+                'description' => 'The author of the item',
+            ),
+            2 => array(
+                'required' => false,
+                'validators' => array(),
+                'filters' => array(),
+                'name' => 'date_updated',
+                'description' => 'The latest updated date timestamp of this item',
+            ),
+            3 => array(
+                'required' => false,
+                'validators' => array(),
+                'filters' => array(),
+                'name' => 'other_fields',
+                'description' => 'The custom fields associated with this item. This is an array of key value pairs',
+            ),
+            4 => array(
+                'required' => false,
+                'validators' => array(
+                    0 => array(
+                        'name' => 'Zend\\I18n\\Validator\\IsInt',
+                        'options' => array(),
+                    ),
+                ),
+                'filters' => array(),
+                'name' => 'force_update',
+                'description' => 'Whether we do a force update or not',
+            ),
+        ),
+    ),
+    'service_manager' => array(
+        'factories' => array(
+            'Form\\V1\\Rest\\Sync\\SyncResource' => 'Form\\V1\\Rest\\Sync\\SyncResourceFactory',
         ),
     ),
 );

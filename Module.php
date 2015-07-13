@@ -66,7 +66,31 @@ class Module implements ApigilityProviderInterface
         return array(
             'invokables' => array(
                 'form_form_service' => 'Form\Service\Form'
-            )
+            ),
+            'factories' => array(
+                'canariumform_module_options' => function ($sm) {
+                    $config = $sm->get('Config');
+                    return new Option\ModuleOption(
+                        isset($config['canariumform']) ?
+                            $config['canariumform'] : array()
+                    );
+                },
+                'canariumform_parent_data_mapper' => function ($sm) {
+                    $entityManager = $sm->get('Doctrine\ORM\EntityManager');
+                    return $entityManager->getRepository(
+                        'Form\\Entity\\ParentData'
+                    );
+                }
+            ),
+            'initializers' => array(
+                'ObjectManagerInitializer' => function ($service, $sm) {
+                    if ($service instanceof ObjectManagerAwareInterface) {
+                        $entityManager = $sm->get('Doctrine\ORM\EntityManager');
+
+                        $service->setObjectManager($entityManager);
+                    }
+                },
+            ),
         );
     }
 }
