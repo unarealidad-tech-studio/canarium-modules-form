@@ -65,7 +65,15 @@ class Module implements ApigilityProviderInterface
     {
         return array(
             'invokables' => array(
-                'form_form_service' => 'Form\Service\Form'
+                'form_form_service' => 'Form\Service\Form',
+            ),
+            'factories' => array(
+                'form_upload_handler' => function ($sm) {
+                    $options = array(
+                        'upload_dir' => './data/uploads/tmp/',
+                    );
+                    return new \Form\Library\UploadHandler($options);
+                },
             )
         );
     }

@@ -304,7 +304,8 @@ class AdminController extends AbstractActionController
 		return $response;
 	}
 
-	public function deleteElementAction() {
+	public function deleteElementAction()
+	{
 		$id = (int) $this->params()->fromRoute('id', 0);
 		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 		$entity = $objectManager->getRepository('Form\Entity\Element')->find($id);
