@@ -28,6 +28,46 @@ class Form implements ServiceLocatorAwareInterface
      */
     protected $objectManager;
 
+    /**
+     * @var \Form\Mapper\ParentData
+     */
+    protected $parentDataMapper;
+
+    public function createParentDataFromApiInput(array $api_input)
+    {
+        if (empty($api_input['user_id'])) {
+            throw new \InvalidArgumentException('Please specify a user_id');
+        }
+
+        if (empty($api_input['form_name'])) {
+            throw new \InvalidArgumentException('Please specify the connected form');
+        }
+
+        $user = $this->getObjectManager()
+            ->getRepository('CanariumCore\Entity\User')
+            ->find($api_input['user_id']);
+
+        if (!$user) {
+            throw new \InvalidArgumentException('Invalid User passed');
+        }
+
+        $formObject = $this->getFormByName($api_input['form_name']);
+
+        if (!$formObject) {
+            throw new \InvalidArgumentException('Invalid form passed');
+        }
+
+        $newParentData = $this->createParentDataFromArray(
+            $formObject, $api_input['other_fields']
+        );
+
+        $newParentData->setUser($user);
+
+        $this->getParentDataMapper()->save();
+
+        return $newParentData;
+    }
+
     public function updateFieldSetElementOptions($elements, $data)
     {
         if (!is_array($elements)) {
@@ -268,6 +308,24 @@ class Form implements ServiceLocatorAwareInterface
     {
         $this->objectManager = $objectManager;
         return $this;
+    }
+
+    public function getModuleOption()
+    {
+        if (empty($this->moduleOption)) {
+            $this->moduleOption = $this->getServiceLocator()->get('canariumform_module_options');
+        }
+
+        return $this->moduleOption;
+    }
+
+    public function getParentDataMapper()
+    {
+        if (!$this->parentDataMapper) {
+            $this->parentDataMapper = $this->getServiceLocator()->get('canariumform_parentdata_mapper');
+        }
+
+        return $this->parentDataMapper;
     }
 
 }
