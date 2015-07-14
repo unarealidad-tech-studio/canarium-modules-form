@@ -84,7 +84,14 @@ class ParentData extends EntityRepository implements MapperInterface
             $query->andWhere($query->expr()->notIn('parent_data.id', $criteria['ids_to_exclude']));
         }
 
-        $query->orderBy('parent_data.date', Criteria::ASC);
+        if (!empty($criteria['order_by']['field'])) {
+            $query->orderBy(
+                'parent_data.'.$criteria['order_by']['field'],
+                !empty($criteria['order_by']['direction']) && strtolower($criteria['order_by']['direction']) == 'desc' ? Criteria::DESC : Criteria::ASC
+            );
+        } else {
+            $query->orderBy('parent_data.date', Criteria::ASC);
+        }
 
         return $query;
     }

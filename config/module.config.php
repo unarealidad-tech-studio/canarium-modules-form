@@ -217,6 +217,13 @@ return array(
                         2 => 'admin',
                     ),
                 ),
+                26 => array(
+                    'controller' => 'Form\\V1\\Rest\\FormData\\Controller',
+                    'roles' => array(
+                        1 => 'user',
+                        2 => 'admin',
+                    ),
+                ),
             ),
         ),
     ),
@@ -255,15 +262,6 @@ return array(
                 ),
                 'may_terminate' => true,
             ),
-            'form.rest.doctrine.parent-data' => array(
-                'type' => 'Segment',
-                'options' => array(
-                    'route' => '/api/form/parent-data[/:parent_data_id]',
-                    'defaults' => array(
-                        'controller' => 'Form\\V1\\Rest\\ParentData\\Controller',
-                    ),
-                ),
-            ),
             'form.rest.doctrine.element' => array(
                 'type' => 'Segment',
                 'options' => array(
@@ -279,15 +277,6 @@ return array(
                     'route' => '/api/form/fieldset[/:fieldset_id]',
                     'defaults' => array(
                         'controller' => 'Form\\V1\\Rest\\Fieldset\\Controller',
-                    ),
-                ),
-            ),
-            'form.rest.doctrine.data' => array(
-                'type' => 'Segment',
-                'options' => array(
-                    'route' => '/api/form/data[/:data_id]',
-                    'defaults' => array(
-                        'controller' => 'Form\\V1\\Rest\\Data\\Controller',
                     ),
                 ),
             ),
@@ -309,6 +298,15 @@ return array(
                     ),
                 ),
             ),
+            'form.rest.form-data' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/api/form/form[/:form_name]/data[/:form_data_id]',
+                    'defaults' => array(
+                        'controller' => 'Form\\V1\\Rest\\FormData\\Controller',
+                    ),
+                ),
+            ),
         ),
     ),
     'view_manager' => array(
@@ -321,38 +319,14 @@ return array(
     ),
     'zf-versioning' => array(
         'uri' => array(
-            0 => 'form.rest.doctrine.parent-data',
             1 => 'form.rest.doctrine.element',
             2 => 'form.rest.doctrine.fieldset',
-            3 => 'form.rest.doctrine.data',
             4 => 'form.rest.doctrine.form',
             5 => 'form.rest.sync',
+            0 => 'form.rest.form-data',
         ),
     ),
     'zf-rest' => array(
-        'Form\\V1\\Rest\\ParentData\\Controller' => array(
-            'listener' => 'Form\\V1\\Rest\\ParentData\\ParentDataResource',
-            'route_name' => 'form.rest.doctrine.parent-data',
-            'route_identifier_name' => 'parent_data_id',
-            'entity_identifier_name' => 'id',
-            'collection_name' => 'parent_data',
-            'entity_http_methods' => array(
-                0 => 'GET',
-                1 => 'PATCH',
-                2 => 'PUT',
-                3 => 'DELETE',
-            ),
-            'collection_http_methods' => array(
-                0 => 'GET',
-                1 => 'POST',
-            ),
-            'collection_query_whitelist' => array(),
-            'page_size' => 25,
-            'page_size_param' => null,
-            'entity_class' => 'Form\\Entity\\ParentData',
-            'collection_class' => 'Form\\V1\\Rest\\ParentData\\ParentDataCollection',
-            'service_name' => 'ParentData',
-        ),
         'Form\\V1\\Rest\\Element\\Controller' => array(
             'listener' => 'Form\\V1\\Rest\\Element\\ElementResource',
             'route_name' => 'form.rest.doctrine.element',
@@ -398,29 +372,6 @@ return array(
             'entity_class' => 'Form\\Entity\\Fieldset',
             'collection_class' => 'Form\\V1\\Rest\\Fieldset\\FieldsetCollection',
             'service_name' => 'Fieldset',
-        ),
-        'Form\\V1\\Rest\\Data\\Controller' => array(
-            'listener' => 'Form\\V1\\Rest\\Data\\DataResource',
-            'route_name' => 'form.rest.doctrine.data',
-            'route_identifier_name' => 'data_id',
-            'entity_identifier_name' => 'id',
-            'collection_name' => 'data',
-            'entity_http_methods' => array(
-                0 => 'GET',
-                1 => 'PATCH',
-                2 => 'PUT',
-                3 => 'DELETE',
-            ),
-            'collection_http_methods' => array(
-                0 => 'GET',
-                1 => 'POST',
-            ),
-            'collection_query_whitelist' => array(),
-            'page_size' => 25,
-            'page_size_param' => null,
-            'entity_class' => 'Form\\Entity\\Data',
-            'collection_class' => 'Form\\V1\\Rest\\Data\\DataCollection',
-            'service_name' => 'Data',
         ),
         'Form\\V1\\Rest\\Form\\Controller' => array(
             'listener' => 'Form\\V1\\Rest\\Form\\FormResource',
@@ -469,33 +420,46 @@ return array(
             'collection_class' => 'Form\\V1\\Rest\\Sync\\SyncCollection',
             'service_name' => 'Sync',
         ),
+        'Form\\V1\\Rest\\FormData\\Controller' => array(
+            'listener' => 'Form\\V1\\Rest\\FormData\\FormDataResource',
+            'route_name' => 'form.rest.form-data',
+            'route_identifier_name' => 'form_data_id',
+            'collection_name' => 'data',
+            'entity_http_methods' => array(
+                0 => 'GET',
+                1 => 'PATCH',
+                2 => 'PUT',
+                3 => 'DELETE',
+            ),
+            'collection_http_methods' => array(
+                0 => 'GET',
+                1 => 'POST',
+            ),
+            'collection_query_whitelist' => array(
+                0 => 'order_by',
+            ),
+            'page_size' => 25,
+            'page_size_param' => 'limit',
+            'entity_class' => 'Form\\V1\\Rest\\FormData\\FormDataEntity',
+            'collection_class' => 'Form\\V1\\Rest\\FormData\\FormDataCollection',
+            'service_name' => 'FormData',
+        ),
     ),
     'zf-content-negotiation' => array(
         'controllers' => array(
-            'Form\\V1\\Rest\\ParentData\\Controller' => 'HalJson',
             'Form\\V1\\Rest\\Element\\Controller' => 'HalJson',
             'Form\\V1\\Rest\\Fieldset\\Controller' => 'HalJson',
-            'Form\\V1\\Rest\\Data\\Controller' => 'HalJson',
             'Form\\V1\\Rest\\Form\\Controller' => 'HalJson',
             'Form\\V1\\Rest\\Sync\\Controller' => 'HalJson',
+            'Form\\V1\\Rest\\FormData\\Controller' => 'HalJson',
         ),
         'accept-whitelist' => array(
-            'Form\\V1\\Rest\\ParentData\\Controller' => array(
-                0 => 'application/vnd.form.v1+json',
-                1 => 'application/hal+json',
-                2 => 'application/json',
-            ),
             'Form\\V1\\Rest\\Element\\Controller' => array(
                 0 => 'application/vnd.form.v1+json',
                 1 => 'application/hal+json',
                 2 => 'application/json',
             ),
             'Form\\V1\\Rest\\Fieldset\\Controller' => array(
-                0 => 'application/vnd.form.v1+json',
-                1 => 'application/hal+json',
-                2 => 'application/json',
-            ),
-            'Form\\V1\\Rest\\Data\\Controller' => array(
                 0 => 'application/vnd.form.v1+json',
                 1 => 'application/hal+json',
                 2 => 'application/json',
@@ -507,16 +471,10 @@ return array(
             ),
         ),
         'content-type-whitelist' => array(
-            'Form\\V1\\Rest\\ParentData\\Controller' => array(
-                0 => 'application/json',
-            ),
             'Form\\V1\\Rest\\Element\\Controller' => array(
                 0 => 'application/json',
             ),
             'Form\\V1\\Rest\\Fieldset\\Controller' => array(
-                0 => 'application/json',
-            ),
-            'Form\\V1\\Rest\\Data\\Controller' => array(
                 0 => 'application/json',
             ),
             'Form\\V1\\Rest\\Form\\Controller' => array(
@@ -529,9 +487,18 @@ return array(
                 1 => 'application/hal+json',
                 2 => 'application/json',
             ),
+            'Form\\V1\\Rest\\FormData\\Controller' => array(
+                0 => 'application/vnd.form.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ),
         ),
         'content_type_whitelist' => array(
             'Form\\V1\\Rest\\Sync\\Controller' => array(
+                0 => 'application/vnd.form.v1+json',
+                1 => 'application/json',
+            ),
+            'Form\\V1\\Rest\\FormData\\Controller' => array(
                 0 => 'application/vnd.form.v1+json',
                 1 => 'application/json',
             ),
@@ -539,19 +506,6 @@ return array(
     ),
     'zf-hal' => array(
         'metadata_map' => array(
-            'Form\\Entity\\ParentData' => array(
-                'route_identifier_name' => 'parent_data_id',
-                'entity_identifier_name' => 'id',
-                'route_name' => 'form.rest.doctrine.parent-data',
-                'hydrator' => 'Form\\V1\\Rest\\ParentData\\ParentDataHydrator',
-                'max_depth' => 3,
-            ),
-            'Form\\V1\\Rest\\ParentData\\ParentDataCollection' => array(
-                'entity_identifier_name' => 'id',
-                'route_name' => 'form.rest.doctrine.parent-data',
-                'is_collection' => true,
-                'max_depth' => 2,
-            ),
             'Form\\Entity\\Element' => array(
                 'route_identifier_name' => 'element_id',
                 'entity_identifier_name' => 'id',
@@ -575,19 +529,6 @@ return array(
             'Form\\V1\\Rest\\Fieldset\\FieldsetCollection' => array(
                 'entity_identifier_name' => 'id',
                 'route_name' => 'form.rest.doctrine.fieldset',
-                'is_collection' => true,
-                'max_depth' => 2,
-            ),
-            'Form\\Entity\\Data' => array(
-                'route_identifier_name' => 'data_id',
-                'entity_identifier_name' => 'id',
-                'route_name' => 'form.rest.doctrine.data',
-                'hydrator' => 'Form\\V1\\Rest\\Data\\DataHydrator',
-                'max_depth' => 2,
-            ),
-            'Form\\V1\\Rest\\Data\\DataCollection' => array(
-                'entity_identifier_name' => 'id',
-                'route_name' => 'form.rest.doctrine.data',
                 'is_collection' => true,
                 'max_depth' => 2,
             ),
@@ -640,14 +581,22 @@ return array(
                 'route_identifier_name' => 'parent_data_id',
                 'is_collection' => true,
             ),
+            'Form\\V1\\Rest\\FormData\\FormDataEntity' => array(
+                'entity_identifier_name' => 'id',
+                'route_name' => 'form.rest.form-data',
+                'route_identifier_name' => 'form_data_id',
+                'hydrator' => 'Zend\\Stdlib\\Hydrator\\ClassMethods',
+            ),
+            'Form\\V1\\Rest\\FormData\\FormDataCollection' => array(
+                'entity_identifier_name' => 'id',
+                'route_name' => 'form.rest.form-data',
+                'route_identifier_name' => 'form_data_id',
+                'is_collection' => true,
+            ),
         ),
     ),
     'zf-apigility' => array(
         'doctrine-connected' => array(
-            'Form\\V1\\Rest\\ParentData\\ParentDataResource' => array(
-                'object_manager' => 'doctrine.entitymanager.orm_default',
-                'hydrator' => 'Form\\V1\\Rest\\ParentData\\ParentDataHydrator',
-            ),
             'Form\\V1\\Rest\\Element\\ElementResource' => array(
                 'object_manager' => 'doctrine.entitymanager.orm_default',
                 'hydrator' => 'Form\\V1\\Rest\\Element\\ElementHydrator',
@@ -656,10 +605,6 @@ return array(
                 'object_manager' => 'doctrine.entitymanager.orm_default',
                 'hydrator' => 'Form\\V1\\Rest\\Fieldset\\FieldsetHydrator',
             ),
-            'Form\\V1\\Rest\\Data\\DataResource' => array(
-                'object_manager' => 'doctrine.entitymanager.orm_default',
-                'hydrator' => 'Form\\V1\\Rest\\Data\\DataHydrator',
-            ),
             'Form\\V1\\Rest\\Form\\FormResource' => array(
                 'object_manager' => 'doctrine.entitymanager.orm_default',
                 'hydrator' => 'Form\\V1\\Rest\\Form\\FormHydrator',
@@ -667,17 +612,6 @@ return array(
         ),
     ),
     'doctrine-hydrator' => array(
-        'Form\\V1\\Rest\\ParentData\\ParentDataHydrator' => array(
-            'entity_class' => 'Form\\Entity\\ParentData',
-            'object_manager' => 'doctrine.entitymanager.orm_default',
-            'by_value' => false,
-            'strategies' => array(
-                'data' => 'ZF\\Apigility\\Doctrine\\Server\\Hydrator\\Strategy\\CollectionExtract',
-                'uploads' => 'ZF\\Apigility\\Doctrine\\Server\\Hydrator\\Strategy\\CollectionExtract',
-                'children' => 'ZF\\Apigility\\Doctrine\\Server\\Hydrator\\Strategy\\CollectionExtract',
-            ),
-            'use_generated_hydrator' => true,
-        ),
         'Form\\V1\\Rest\\Element\\ElementHydrator' => array(
             'entity_class' => 'Form\\Entity\\Element',
             'object_manager' => 'doctrine.entitymanager.orm_default',
@@ -687,13 +621,6 @@ return array(
         ),
         'Form\\V1\\Rest\\Fieldset\\FieldsetHydrator' => array(
             'entity_class' => 'Form\\Entity\\Fieldset',
-            'object_manager' => 'doctrine.entitymanager.orm_default',
-            'by_value' => false,
-            'strategies' => array(),
-            'use_generated_hydrator' => true,
-        ),
-        'Form\\V1\\Rest\\Data\\DataHydrator' => array(
-            'entity_class' => 'Form\\Entity\\Data',
             'object_manager' => 'doctrine.entitymanager.orm_default',
             'by_value' => false,
             'strategies' => array(),
@@ -711,17 +638,11 @@ return array(
         'Form\\V1\\Rest\\Element\\Controller' => array(
             'input_filter' => 'Form\\V1\\Rest\\Element\\Validator',
         ),
-        'Form\\V1\\Rest\\Data\\Controller' => array(
-            'input_filter' => 'Form\\V1\\Rest\\Data\\Validator',
-        ),
         'Form\\V1\\Rest\\Form\\Controller' => array(
             'input_filter' => 'Form\\V1\\Rest\\Form\\Validator',
         ),
         'Form\\V1\\Rest\\Fieldset\\Controller' => array(
             'input_filter' => 'Form\\V1\\Rest\\Fieldset\\Validator',
-        ),
-        'Form\\V1\\Rest\\ParentData\\Controller' => array(
-            'input_filter' => 'Form\\V1\\Rest\\ParentData\\Validator',
         ),
         'Form\\V1\\Rest\\Sync\\Controller' => array(
             'input_filter' => 'Form\\V1\\Rest\\Sync\\Validator',
@@ -791,14 +712,6 @@ return array(
                         'name' => 'Zend\\Filter\\Digits',
                     ),
                 ),
-                'validators' => array(),
-            ),
-        ),
-        'Form\\V1\\Rest\\Data\\Validator' => array(
-            0 => array(
-                'name' => 'value',
-                'required' => false,
-                'filters' => array(),
                 'validators' => array(),
             ),
         ),
@@ -897,14 +810,6 @@ return array(
                 'validators' => array(),
             ),
         ),
-        'Form\\V1\\Rest\\ParentData\\Validator' => array(
-            0 => array(
-                'name' => 'date',
-                'required' => false,
-                'filters' => array(),
-                'validators' => array(),
-            ),
-        ),
         'Form\\V1\\Rest\\Sync\\Validator' => array(
             0 => array(
                 'required' => false,
@@ -951,6 +856,7 @@ return array(
     'service_manager' => array(
         'factories' => array(
             'Form\\V1\\Rest\\Sync\\SyncResource' => 'Form\\V1\\Rest\\Sync\\SyncResourceFactory',
+            'Form\\V1\\Rest\\FormData\\FormDataResource' => 'Form\\V1\\Rest\\FormData\\FormDataResourceFactory',
         ),
     ),
 );
