@@ -453,34 +453,6 @@ return array(
             'Form\\V1\\Rest\\Sync\\Controller' => 'HalJson',
             'Form\\V1\\Rest\\FormData\\Controller' => 'HalJson',
         ),
-        'accept-whitelist' => array(
-            'Form\\V1\\Rest\\Element\\Controller' => array(
-                0 => 'application/vnd.form.v1+json',
-                1 => 'application/hal+json',
-                2 => 'application/json',
-            ),
-            'Form\\V1\\Rest\\Fieldset\\Controller' => array(
-                0 => 'application/vnd.form.v1+json',
-                1 => 'application/hal+json',
-                2 => 'application/json',
-            ),
-            'Form\\V1\\Rest\\Form\\Controller' => array(
-                0 => 'application/vnd.form.v1+json',
-                1 => 'application/hal+json',
-                2 => 'application/json',
-            ),
-        ),
-        'content-type-whitelist' => array(
-            'Form\\V1\\Rest\\Element\\Controller' => array(
-                0 => 'application/json',
-            ),
-            'Form\\V1\\Rest\\Fieldset\\Controller' => array(
-                0 => 'application/json',
-            ),
-            'Form\\V1\\Rest\\Form\\Controller' => array(
-                0 => 'application/json',
-            ),
-        ),
         'accept_whitelist' => array(
             'Form\\V1\\Rest\\Sync\\Controller' => array(
                 0 => 'application/vnd.form.v1+json',
