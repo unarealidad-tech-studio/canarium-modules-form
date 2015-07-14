@@ -109,6 +109,11 @@ class FormDataResource extends AbstractResourceListener
             $current_parent_data = array();
             $current_parent_data['id']= $entity->getId();
             $current_parent_data['user_id'] = $entity->getUser()->getId();
+            $current_parent_data['user_info'] = array(
+                'username' => $entity->getUser()->getUsername(),
+                'displayName' => $entity->getUser()->getDisplayName(),
+                'email' => $entity->getUser()->getEmail()
+            );
             $current_parent_data['date_added'] = $entity->getDate()->getTimestamp();
             $current_parent_data['date_updated'] = (
             $entity->getDateUpdated() ? $entity->getDateUpdated()->getTimestamp() : null
