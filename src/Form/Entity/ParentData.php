@@ -66,6 +66,11 @@ class ParentData
      */
     protected $date_updated;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $ip;
+
 
     /**
      * @ORM\PrePersist
@@ -194,6 +199,17 @@ class ParentData
     public function setDateUpdated(\DateTime $date_updated)
     {
         $this->date_updated = $date_updated;
+        return $this;
+    }
+
+    public function getIp()
+    {
+        return $this->ip;
+    }
+
+    public function setIp($ip)
+    {
+        $this->ip = $ip;
         return $this;
     }
 }

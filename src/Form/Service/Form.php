@@ -62,6 +62,7 @@ class Form implements ServiceLocatorAwareInterface
         );
 
         $newParentData->setUser($user);
+        $newParentData->setIp($_SERVER['REMOTE_ADDR']);
 
         $this->getParentDataMapper()->save();
 
