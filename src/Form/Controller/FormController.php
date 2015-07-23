@@ -87,6 +87,41 @@ class FormController extends AbstractActionController
         return $response;
 	}
 
+    public function submittedFormsAction()
+    {
+        $userId = (int) $this->params()->fromRoute('user_id', 0);
+
+        $user = $this->zfcUserAuthentication()->getIdentity();
+        $userRole = $user->getRoles()[0]->getRoleId();
+
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+        $filters = array();
+        if ($userRole == 'admin') {
+            if ($userId) {
+                $selectedUser = $objectManager->getRepository('\CanariumCore\Entity\User')->find($userId);
+                $filters['user'] = $selectedUser;
+            }
+            $users = $objectManager->getRepository('\CanariumCore\Entity\User')->findAll();
+        } else {
+            $filters['user'] = $user;
+            $users[] = $user;
+        }
+
+        $results = $this->getFormService()->getSubmittedData( $filters );
+
+        $query = $objectManager->createQuery('SELECT a FROM Form\Entity\Form a ORDER BY a.id DESC');
+        $forms = $query->getResult();
+
+        return array(
+            'results'   => $results,
+            'forms'     => $forms,
+            'users'     => $users,
+        );
+    }
+
+
+
 	public function getFormService()
     {
         if (!$this->formService) {

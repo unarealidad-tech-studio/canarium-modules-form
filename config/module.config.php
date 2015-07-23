@@ -30,6 +30,7 @@ return array(
                     'roles' => array(
                         0 => 'user',
                         1 => 'guest',
+                        2 => 'admin',
                     ),
                 ),
                 1 => array(

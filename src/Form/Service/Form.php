@@ -274,6 +274,26 @@ class Form implements ServiceLocatorAwareInterface
         ));
     }
 
+    public function getSubmittedData($data = array())
+    {
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+        $qb = $objectManager->createQueryBuilder();
+        $qb->add('select', 'a')
+            ->add('from', 'Form\Entity\ParentData a')
+            ->add('orderBy', 'a.id DESC')
+            ->setMaxResults(10000);
+
+        // apply filters
+        if ($data['user'] instanceof \CanariumCore\Entity\User) {
+            $qb->andWhere('a.user = :user')
+               ->setParameter(':user', $data['user']);
+        }
+
+        $query = $qb->getQuery();
+        return $query->getResult();
+    }
+
     /**
      * Retrieve service manager instance
      *
