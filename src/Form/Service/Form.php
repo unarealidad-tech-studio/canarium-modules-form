@@ -281,7 +281,7 @@ class Form implements ServiceLocatorAwareInterface
         $qb = $objectManager->createQueryBuilder();
         $qb->add('select', 'a')
             ->add('from', 'Form\Entity\ParentData a')
-            ->add('orderBy', 'a.id DESC')
+            ->add('orderBy', 'a.date DESC')
             ->setMaxResults(10000);
 
         // apply filters
