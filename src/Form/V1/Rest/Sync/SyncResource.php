@@ -35,6 +35,18 @@ class SyncResource extends AbstractResourceListener
         $data->form_name = $this->getEvent()->getRouteMatch()->getParam('form_name');
 
         try {
+
+            if ($data->limit) {
+                $em = $this->getService()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                $query = $em->createQuery('SELECT COUNT(d) FROM Form\Entity\ParentData d WHERE d.user=:user AND d.date>:dateadded')
+                            ->setParameter('user', $this->loggedInUser)
+                            ->setParameter('dateadded', new \DateTime('today 12:00 am'));
+                $result = $query->getSingleScalarResult();
+                if (intval($result) > 0) {
+                    throw new \Exception("Max limit reached");
+                }
+            }
+
             $newItem = $this->getService()->createParentDataFromApiInput(
                 json_decode(json_encode($data), true)
             );
