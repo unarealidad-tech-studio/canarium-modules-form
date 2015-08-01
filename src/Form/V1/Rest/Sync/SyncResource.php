@@ -52,6 +52,8 @@ class SyncResource extends AbstractResourceListener
             );
 
             $data->id = $newItem->getId();
+            $data->date_added = $newItem->getDate();
+            $data->date_updated = $newItem->getDateUpdated();
 
             return $data;
         } catch (\Exception $e) {
