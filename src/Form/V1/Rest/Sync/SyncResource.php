@@ -36,7 +36,7 @@ class SyncResource extends AbstractResourceListener
 
         try {
 
-            if ($data->limit) {
+            if (isset($data->limit) && $data->limit) {
                 $em = $this->getService()->getServiceLocator()->get('Doctrine\ORM\EntityManager');
                 $query = $em->createQuery('SELECT COUNT(d) FROM Form\Entity\ParentData d WHERE d.user=:user AND d.date>:dateadded')
                             ->setParameter('user', $this->loggedInUser)
