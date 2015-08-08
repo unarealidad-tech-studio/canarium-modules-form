@@ -289,6 +289,10 @@ class Form implements ServiceLocatorAwareInterface
             $qb->andWhere('a.user = :user')
                ->setParameter(':user', $data['user']);
         }
+        if ($data['form'] instanceof \Form\Entity\Form) {
+            $qb->andWhere('a.form = :form')
+               ->setParameter(':form', $data['form']);
+        }
 
         $query = $qb->getQuery();
         return $query->getResult();
