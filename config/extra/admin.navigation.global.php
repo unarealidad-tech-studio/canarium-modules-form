@@ -5,7 +5,7 @@ return array(
 			 array(
 				'label' => 'Form Manager',
 				'route' => 'admin/form',
-				'resource' => 'owner',
+				'resource' => 'admin',
 				'controller' => 'Admin\Form',
 				'icon' => 'fa fa-cogs',
 				'pages' => array(
@@ -29,7 +29,7 @@ return array(
 						'label' => 'Submitted Forms',
 						'route' => 'admin/form',
 						'controller' => 'Admin\Form',
-						'resource' => 'owner',
+						'resource' => 'admin',
 						'action'     => 'submitted-forms',
 				 		'icon' => 'fa fa-th-list',
 					),
@@ -39,13 +39,13 @@ return array(
 			 array(
 				'label' => 'Reports Manager',
 				'route' => 'admin/form',
-				'resource' => 'owner',
+				'resource' => 'admin',
 				'controller' => 'Admin\Form',
 				'action'=> 'reports',
 				'icon' => 'fa fa-bar-chart-o',
 				'pages' => array(
 				),
-             ),             
+             ),
          ),
      ),
 );
