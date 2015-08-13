@@ -37,7 +37,16 @@ class AdminController extends AbstractActionController
 		$entity = new Form();
 		$form->bind($entity);
 
+		$formsCount = $this->getFormService()->countForms();
+		$formsLimit = $this->getServiceLocator()->get('canariumform_module_options')->getFormCreationLimit();
+
 		if ($this->request->isPost()) {
+
+			if ($formsLimit > 0 && $formsLimit <= $formsCount) {
+				$this->flashMessenger()->addErrorMessage('The maximum forms allowed has been reached.');
+				return $this->redirect()->toRoute('admin/form', array('action' => 'create-form'));
+			}
+
 			$form->setData($this->request->getPost());
 			if ($form->isValid()) {
 				$objectManager->persist($entity);
@@ -437,6 +446,25 @@ class AdminController extends AbstractActionController
 	    $response->setContent($output);
 
 	    return $response;
+	}
+
+	public function settingsAction()
+	{
+		$form = new \Form\Form\SettingsForm();
+		$data = $this->getServiceLocator()->get('canariumform_module_options')->toArray();
+		$form->setData($data);
+
+		$service = $this->getServiceLocator()->get('form_settings_service');
+
+		if ($this->getRequest()->isPost()) {
+			$this->flashMessenger()->addSuccessMessage('Configurations has been updated');
+			$service->writeConfiguration($this->getRequest()->getPost());
+			return $this->redirect()->toRoute('admin/form', array('action'=>'settings'));
+		}
+
+		return array(
+			'form' => $form,
+		);
 	}
 
 	public function getFormService()

@@ -353,4 +353,12 @@ class Form implements ServiceLocatorAwareInterface
         return $this->parentDataMapper;
     }
 
+    public function countForms()
+    {
+        $queryBuilder = $this->getObjectManager()->createQueryBuilder();
+        $queryBuilder->select('COUNT(f)')->from('Form\Entity\Form' , 'f');
+        $query = $queryBuilder->getQuery();
+        return $query->getSingleScalarResult();
+    }
+
 }

@@ -65,7 +65,8 @@ class Module implements ApigilityProviderInterface
     {
         return array(
             'invokables' => array(
-                'form_form_service' => 'Form\Service\Form'
+                'form_form_service' => 'Form\Service\Form',
+                'form_settings_service' => 'Form\Service\Settings'
             ),
             'factories' => array(
                 'canariumform_module_options' => function ($sm) {

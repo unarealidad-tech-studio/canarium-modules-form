@@ -1,0 +1,37 @@
+<div class="page-head">
+    <h3 class="m-b-less">Settings</h3>
+</div>
+
+<div class="wrapper">
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            <section class="panel">
+                <?php echo $this->form()->openTag($form); ?>
+                <div class="panel-body">
+
+                    <?=$this->flashMessenger()
+                            ->setMessageOpenFormat('<div%s><button data-dismiss="alert" class="close close-sm" type="button"><i class="fa fa-times"></i></button><h4>Error</h4><p>')
+                            ->setMessageSeparatorString('</p><p>')
+                            ->setMessageCloseString('</p></div>')
+                            ->render('error', array('alert', 'alert-block', 'alert-danger', 'fade', 'in'))?>
+
+                    <?=$this->flashMessenger()
+                            ->setMessageOpenFormat('<div%s><button data-dismiss="alert" class="close close-sm" type="button"><i class="fa fa-times"></i></button><h4>Success</h4><p>')
+                            ->setMessageSeparatorString('</p><p>')
+                            ->setMessageCloseString('</p></div>')
+                            ->render('success', array('alert', 'alert-block', 'alert-success', 'fade', 'in'))?>
+
+                    <div class="form-group">
+                        <label for="">Form Creation Limit</label>
+                        <?php echo $this->formRow($form->get('form_creation_limit')); ?>
+                    </div>
+                </div>
+                <?php
+                echo $this->formSubmit($form->get('submit'));
+                echo $this->form()->closeTag();
+                ?>
+            </section>
+        </div>
+    </div>
+</div>
+

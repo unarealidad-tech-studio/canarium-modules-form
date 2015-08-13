@@ -1,4 +1,4 @@
-<?php 
+<?php
 $fields = $form->get('form');
 $form
  ->setAttribute('action', $this->url('admin/form', array('action' => 'create-form')))
@@ -18,6 +18,13 @@ $form
             <section class="panel">
                 <?php echo $this->form()->openTag($form); ?>
                 <div class="panel-body">
+
+                    <?=$this->flashMessenger()
+                            ->setMessageOpenFormat('<div%s><h4>Error</h4><button data-dismiss="alert" class="close close-sm" type="button"><i class="fa fa-times"></i></button><p>')
+                            ->setMessageSeparatorString('</p><p>')
+                            ->setMessageCloseString('</p></div>')
+                            ->render('error', array('alert', 'alert-block', 'alert-danger', 'fade', 'in'))?>
+
                     <div class="form-group">
                         <label for="">Form Name</label>
                         <?php echo $this->formRow($fields->get('name')); ?>

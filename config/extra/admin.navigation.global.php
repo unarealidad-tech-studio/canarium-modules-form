@@ -15,7 +15,7 @@ return array(
 						'controller' => 'Admin\Form',
 						'resource' => 'admin',
 						'action'     => 'create-form',
-				 		'icon' => 'fa fa-th-list',
+				 		'icon' => 'fa fa-plus-circle',
 					),
 					array(
 						'label' => 'List',
@@ -32,6 +32,14 @@ return array(
 						'resource' => 'admin',
 						'action'     => 'submitted-forms',
 				 		'icon' => 'fa fa-th-list',
+					),
+					array(
+						'label' => 'Settings',
+						'route' => 'admin/form',
+						'controller' => 'Admin\Form',
+						'resource' => 'owner',
+						'action'     => 'settings',
+				 		'icon' => 'fa fa-cog',
 					),
 				),
              ),
