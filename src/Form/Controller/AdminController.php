@@ -76,7 +76,7 @@ class AdminController extends AbstractActionController
 
 		$view = new ViewModel();
 		$view->paginator = $paginator;
-		$view->routeParams = array('route' => 'admin/manage','urlParams' => array());
+		$view->routeParams = array('route' => 'admin/form','urlParams' => array('action' => 'manage'));
 		return $view;
 	}
 
