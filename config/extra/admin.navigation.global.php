@@ -37,7 +37,7 @@ return array(
 						'label' => 'Settings',
 						'route' => 'admin/form',
 						'controller' => 'Admin\Form',
-						'resource' => 'owner',
+						'resource' => 'superuser',
 						'action'     => 'settings',
 				 		'icon' => 'fa fa-cog',
 					),
