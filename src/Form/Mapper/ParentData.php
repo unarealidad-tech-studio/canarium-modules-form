@@ -93,6 +93,10 @@ class ParentData extends EntityRepository implements MapperInterface
             $query->orderBy('parent_data.date', Criteria::ASC);
         }
 
+        if (!empty($criteria['limit'])) {
+            $query->setMaxResults($criteria['limit']);
+        }
+
         return $query;
     }
 
