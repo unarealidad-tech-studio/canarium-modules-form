@@ -13,8 +13,8 @@ $form
 </div>
 
 <div class="wrapper">
-	<div class="row">
-		<div class="col-xs-12">
+    <div class="row">
+        <div class="col-xs-12">
             <section class="panel">
                 <?php echo $this->form()->openTag($form); ?>
                 <div class="panel-body">
@@ -28,7 +28,7 @@ $form
                     <div class="form-group">
                         <label for="">Form Name</label>
                         <?php echo $this->formRow($fields->get('name')); ?>
-                    </div>   
+                    </div>
                     <div class="form-group">
                         <label for="">Form Label</label>
                         <?php echo $this->formRow($fields->get('label')); ?>
@@ -37,13 +37,36 @@ $form
                         <label for="">RedirectToPage</label>
                         <?php echo $this->formRow($fields->get('redirect')); ?>
                     </div>
+                    <div class="form-group">
+                        <label>Permalink</label>
+                        <?php echo $this->formRow($fields->get('permalink')); ?>
+                    </div>
+                    <div class="form-group">
+                        <label>Publish</label>
+                        <div>
+                            <?php
+                                $publish = $fields->get('publish');
+                                $publish->setAttribute('class', 'form-control js-switch-blue');
+                            ?>
+                            <?php echo $this->formRow($publish); ?>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Featured Image</label>
+                        <?php
+                            $featuredImage = $fields->get('featured_image');
+                            $featuredImage->setAttribute('class', 'form-control file');
+                            echo $this->formRow($featuredImage);
+                        ?>
+                    </div>
                 </div>
-				<?php 
-				echo $this->formSubmit($form->get('submit'));
-				echo $this->form()->closeTag();
-				?>
+                <?php
+                echo $this->formSubmit($form->get('submit'));
+                echo $this->formRow($fields->get('id'));
+                echo $this->form()->closeTag();
+                ?>
             </section>
-		</div>
-	</div>
+        </div>
+    </div>
 </div>
 

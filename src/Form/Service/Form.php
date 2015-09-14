@@ -124,10 +124,21 @@ class Form implements ServiceLocatorAwareInterface
 
         $form = new \Zend\Form\Form($entity->getName());
         $form->setLabel($entity->getLabel());
-        foreach($entity->getFieldset() as $fieldsetEntity){
+        foreach($entity->getFieldset()->filter(
+            function($entry) {
+                  return $entry->getParent() ? false : true;
+                }
+            ) as $fieldsetEntity){
             $class = $fieldsetEntity->getClass();
-            $fieldset = new $class($fieldsetEntity->getName());
+            $fieldset = $fieldsetEntity->generateFieldsetObject($fieldsetEntity);
             $fieldset->setLabel($fieldsetEntity->getLabel());
+            $fieldset->setObject($fieldsetEntity);
+
+            // GET FIELDSET'S CHILDREN
+            foreach($fieldsetEntity->getChildren() as $fieldsetChildEntity){
+                $fieldset->add($fieldsetChildEntity->generateFieldsetObject());
+            }
+
             foreach($fieldsetEntity->getElement() as $elementEntity){
                 $elementClass = $elementEntity->getClass();
                 $element = new $elementClass($elementEntity->getId());
@@ -142,7 +153,6 @@ class Form implements ServiceLocatorAwareInterface
 
             $form->add($fieldset);
         }
-
         return $form;
     }
 
@@ -241,6 +251,19 @@ class Form implements ServiceLocatorAwareInterface
         }
 
         return ($results ? $results[0] : null);
+    }
+
+    public function uploadImage($data)
+    {
+        $renamer = new \Zend\Filter\File\Rename(array(
+            'target' => './data/uploads/form/logo' . substr($data['name'], strrpos($data['name'], '.')),
+            'randomize' => true,
+        ));
+
+        if ($status = $renamer->filter($data)) {
+            return basename($status['tmp_name']);
+        }
+        return $status;
     }
 
     public function createParentDataFromArray(CanariumForm $form, array $data)

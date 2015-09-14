@@ -13,14 +13,14 @@ class FieldsetFieldset extends Fieldset implements InputFilterProviderInterface
         parent::__construct('form-fieldset');
 
         $this->setHydrator(new DoctrineHydrator($objectManager,'Form\Entity\Fieldset'))->setObject(new \Form\Entity\Fieldset());
-		
+
         $this->add(array(
             'name' => 'id',
             'attributes' => array(
                 'type'  => 'hidden',
             ),
         ));
-		
+
 		$this->add(array(
             'name' => 'name',
             'attributes' => array(
@@ -38,7 +38,7 @@ class FieldsetFieldset extends Fieldset implements InputFilterProviderInterface
                 'value' => '\Zend\Form\Fieldset'
             ),
         ));
-		
+
         $this->add(array(
             'name' => 'label',
             'attributes' => array(
@@ -66,11 +66,18 @@ class FieldsetFieldset extends Fieldset implements InputFilterProviderInterface
                 'size' => 2
             ),
         ));
+
+        $this->add(array(
+            'name' => 'description',
+            'attributes' => array(
+                'type'  => 'textarea',
+            ),
+        ));
     }
 
 	public function getInputFilterSpecification(){
 		return array(
             'element' => array('required' => false)
         );
-	}    
+	}
 }

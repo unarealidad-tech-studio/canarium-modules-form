@@ -1,4 +1,10 @@
 <?php
+
+$this->headScript()->prependFile($this->basePath() . '/assets/admin/js/jquery-ui.js');
+$this->inlineScript()->prependFile($this->basePath() . '/assets/admin/js/plugins/ckeditor/adapters/jquery.js');
+$this->inlineScript()->prependFile($this->basePath() . '/assets/admin/js/plugins/ckeditor/config.js');
+$this->inlineScript()->prependFile($this->basePath() . '/assets/admin/js/plugins/ckeditor/ckeditor.js');
+
 $form->setAttribute('action', $this->url('admin/form', array('action' => 'edit-section', 'id' => $this->id)))
 	 ->prepare();
 
@@ -15,12 +21,12 @@ $elementCollections = $fields->get('element');
 <div class="wrapper">
 	<div class="row">
 		<div class="col-xs-12">
-            <section class="panel">                
+            <section class="panel">
                 <div class="panel-body">
                     <div class="form-group">
                         <label for="">Section Name</label>
                         <?php echo $this->formRow($fields->get('name')); ?>
-                    </div>      
+                    </div>
                     <div class="form-group">
                         <label for="">Section Label</label>
                         <?php echo $this->formRow($fields->get('label')); ?>
@@ -29,7 +35,10 @@ $elementCollections = $fields->get('element');
                         <label for="">Sort</label><br />
                         <?php echo $this->formRow($fields->get('sort')); ?>
                     </div>
-
+                    <div class="form-group">
+                        <label for="">Description</label><br />
+                        <?php echo $this->formRow($fields->get('description')); ?>
+                    </div>
                 </div>
             </section>
 		</div>
@@ -56,7 +65,7 @@ $elementCollections = $fields->get('element');
                                     </div>
                                 </div>
                             </div>
-                        </div>                     
+                        </div>
                     </span>
                 </header>
                 <table class="table">
@@ -82,9 +91,9 @@ $elementCollections = $fields->get('element');
                         <td><?php echo $this->formRow($col->get('class')); ?></td>
                         <td>
                             <?php echo $this->formRow($col->get('options')); ?>
-                            <?php 
+                            <?php
                             $options = $col->get('options')->getValue();
-                           
+
                             if (!empty($options)) {
                                 $optionsArr = unserialize($options);
                                 $valueOptions = implode("\n", $optionsArr['value_options']);
@@ -96,7 +105,7 @@ $elementCollections = $fields->get('element');
                             <small>Note: <em>One item per line</em></small>
                             <br /><br />
                             <strong>Attributes</strong>
-                            <?php echo $this->formRow($col->get('attributes')); ?>                        
+                            <?php echo $this->formRow($col->get('attributes')); ?>
                         </td>
                         <td>
                             <?php echo $this->formRow($col->get('sort')); ?>
@@ -112,7 +121,7 @@ $elementCollections = $fields->get('element');
     <div class="row">
         <div class="col-xs-12">
             <section class="panel">
-                <?php 
+                <?php
                 echo $this->formSubmit($form->get('submit'));
                 ?>
             </section>
@@ -120,3 +129,9 @@ $elementCollections = $fields->get('element');
     </div>
 </div>
 <?php echo $this->form()->closeTag(); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('textarea[name="form-fieldset[description]"]').ckeditor();
+    });
+</script>

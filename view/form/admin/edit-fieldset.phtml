@@ -19,12 +19,12 @@ $elementCollections = $fields->get('element');
                 <header class="panel-heading">
                     Fieldset
                 </header>
-                
+
                 <div class="panel-body">
                     <div class="form-group">
                         <label for="">Fieldset Name</label>
                         <?php echo $this->formRow($fields->get('name')); ?>
-                    </div>      
+                    </div>
                     <div class="form-group">
                         <label for="">Fieldset Label</label>
                         <?php echo $this->formRow($fields->get('label')); ?>
@@ -60,7 +60,7 @@ $elementCollections = $fields->get('element');
                                     </div>
                                 </div>
                             </div>
-                        </div>                     
+                        </div>
                     </span>
                 </header>
                 <table class="table">
@@ -86,9 +86,9 @@ $elementCollections = $fields->get('element');
                         <td><?php echo $this->formRow($col->get('class')); ?></td>
                         <td>
                             <?php echo $this->formRow($col->get('options')); ?>
-                            <?php 
+                            <?php
                             $options = $col->get('options')->getValue();
-                           
+
                             if (!empty($options)) {
                                 $optionsArr = unserialize($options);
                                 $valueOptions = implode("\n", $optionsArr['value_options']);
@@ -100,7 +100,7 @@ $elementCollections = $fields->get('element');
                             <small>Note: <em>One item per line</em></small>
                             <br /><br />
                             <strong>Attributes</strong>
-                            <?php echo $this->formRow($col->get('attributes')); ?>                        
+                            <?php echo $this->formRow($col->get('attributes')); ?>
                         </td>
                         <?php /* <td>
                             <?php foreach ($col->get('element-attribute') as $u=>$elementAttribute) { ?>
@@ -124,7 +124,7 @@ $elementCollections = $fields->get('element');
     <div class="row">
         <div class="col-xs-12">
             <section class="panel">
-                <?php 
+                <?php
                 echo $this->formSubmit($form->get('submit'));
                 echo $this->form()->closeTag();
                 ?>

@@ -11,11 +11,28 @@ use Zend\Http\Response\Stream;
 class FormController extends AbstractActionController
 {
 	public $redirectUrl = '/form/thank-you';
+    protected $formService;
 
     public function indexAction(){
 		$id = $this->params()->fromRoute('id',0);
-		$objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-		$entity = $objectManager->getRepository('Form\Entity\Form')->find($id);
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+        if (is_numeric($id)) {
+            $entity = $objectManager->getRepository('Form\Entity\Form')->find($id);
+        } else {
+            $entity = $objectManager->getRepository('Form\Entity\Form')
+                                    ->findOneBy(array(
+                                        'permalink' => $id,
+                                        'publish'   => true,
+                                    ));
+        }
+
+        if (!$entity) {
+            throw new \ErrorHandler\Exception\NotFoundException(
+                "Form not found",
+                1
+            );
+        }
 
 		$form = $this->getFormService()->getZendFormCounterpart($entity);
 
@@ -54,6 +71,7 @@ class FormController extends AbstractActionController
 
 		$view = new ViewModel();
 		$view->form = $form;
+        $view->entity = $entity;
 		return $view;
 	}
 
