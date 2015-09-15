@@ -1,8 +1,8 @@
 <?php
 $fields = $form->get('form');
-$form
- ->setAttribute('action', $this->url('admin/form', array('action' => 'create-form')))
- ->prepare()
+$form->setAttribute('action', $this->url('admin/form', array('action' => 'create-form')))
+     ->setAttribute('enctype', 'multipart/form-data')
+     ->prepare()
 ;
 ?>
 

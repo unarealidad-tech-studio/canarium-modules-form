@@ -47,11 +47,49 @@ class AdminController extends AbstractActionController
                 return $this->redirect()->toRoute('admin/form', array('action' => 'create-form'));
             }
 
-            $form->setData($this->request->getPost());
-            if ($form->isValid()) {
+            $error = false;
+            $post = array_merge_recursive(
+                $this->request->getPost()->toArray(),
+                $this->request->getFiles()->toArray()
+            );
+
+            if (
+                !empty($post['form']['featured_image']) &&
+                !$post['form']['featured_image']['error']
+            ) {
+                $valid = new \Zend\Validator\File\Extension(
+                    array('png', 'jpg', 'gif', 'jpeg'),
+                    true
+                );
+
+                if (!$valid->isValid($post['form']['featured_image'])) {
+                    $form->setMessages(array(
+                        'form' => array(
+                            'featured_image' => array(
+                                'Please enter a valid image.'
+                            )
+                        )
+                    ));
+                    $error = true;
+                }
+            }
+
+            $form->setData($post);
+            if ($form->isValid() && !$error) {
                 if ($entity->getPermalink() == '') {
                     $permalink = $this->getFormService()->generateFormPermalink($entity);
                     $entity->setPermalink($permalink);
+                }
+
+                if (
+                    !empty($post['form']['featured_image']) &&
+                    !$post['form']['featured_image']['error']
+                ) {
+                    $filename = $this->getFormService()->uploadImage($post['form']['featured_image']);
+
+                    if ($filename) {
+                        $entity->setFeaturedImage($filename);
+                    }
                 }
 
                 $objectManager->persist($entity);
@@ -138,9 +176,6 @@ class AdminController extends AbstractActionController
                     $entity->setPermalink($oldPermalink);
                 }
 
-                $objectManager->persist($entity);
-                $objectManager->flush();
-
                 if (
                     !empty($post['form']['featured_image']) &&
                     !$post['form']['featured_image']['error']
@@ -148,9 +183,11 @@ class AdminController extends AbstractActionController
                     $filename = $this->getFormService()->uploadImage($post['form']['featured_image']);
                     if ($filename) {
                         $entity->setFeaturedImage($filename);
-                        $objectManager->flush();
                     }
                 }
+
+                $objectManager->persist($entity);
+                $objectManager->flush();
 
                 return $this->redirect()->toRoute('admin/form', array('action'=>'manage'));
              } else {
