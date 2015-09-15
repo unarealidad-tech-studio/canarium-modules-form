@@ -66,6 +66,10 @@ class FormController extends AbstractActionController
 			$objectManager->persist($parentData);
 			$objectManager->flush();
 
+            if ($redirect = $entity->getRedirect()) {
+                return $this->redirect()->toUrl('/'.$redirect->getPermalink());
+            }
+
 			return $this->redirect()->toUrl($this->redirectUrl);
 		}
 
