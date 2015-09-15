@@ -275,7 +275,7 @@ class Form implements ServiceLocatorAwareInterface
     {
         $filter = new \Page\Filter\Url();
         $permalink = $filter->filter($form->getName());
-        var_dump($form->getName());
+
         $unique = false;
         $ctr = 1;
         $runpermalink = $permalink;
