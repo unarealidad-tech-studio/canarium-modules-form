@@ -266,6 +266,29 @@ class Form implements ServiceLocatorAwareInterface
         return $status;
     }
 
+    public function generateFormPermalink(CanariumForm $form)
+    {
+        $filter = new \Page\Filter\Url();
+        $permalink = $filter->filter($form->getName());
+        var_dump($form->getName());
+        $unique = false;
+        $ctr = 1;
+        $runpermalink = $permalink;
+        while (!$unique) {
+            $result = $this->getObjectManager()->getRepository('Form\Entity\Form')->findOneBy(array(
+                'permalink' => $runpermalink
+            ));
+
+            if ($result) {
+                $runpermalink = $permalink . '-' . $ctr;
+                $ctr++;
+            } else {
+                return $runpermalink;
+            }
+        }
+    }
+
+
     public function createParentDataFromArray(CanariumForm $form, array $data)
     {
         //This will only support one dimensional arrays for now

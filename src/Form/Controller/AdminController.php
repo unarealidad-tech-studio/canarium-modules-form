@@ -49,8 +49,14 @@ class AdminController extends AbstractActionController
 
             $form->setData($this->request->getPost());
             if ($form->isValid()) {
+                if ($entity->getPermalink() == '') {
+                    $permalink = $this->getFormService()->generateFormPermalink($entity);
+                    $entity->setPermalink($permalink);
+                }
+
                 $objectManager->persist($entity);
                 $objectManager->flush();
+
                 return $this->redirect()->toRoute('admin/form', array('action'=>'manage'));
             } else {
                 foreach ($form->getMessages() as $messageId => $message) {
@@ -101,6 +107,8 @@ class AdminController extends AbstractActionController
                 $this->request->getFiles()->toArray()
             );
 
+            $oldPermalink = $entity->getPermalink();
+
             $form->setData($post);
 
             if (
@@ -125,6 +133,10 @@ class AdminController extends AbstractActionController
             }
 
             if ($form->isValid() && !$error) {
+
+                if ($entity->getPermalink() == '') {
+                    $entity->setPermalink($oldPermalink);
+                }
 
                 $objectManager->persist($entity);
                 $objectManager->flush();
