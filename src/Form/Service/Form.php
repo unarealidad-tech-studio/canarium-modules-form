@@ -255,10 +255,15 @@ class Form implements ServiceLocatorAwareInterface
 
     public function uploadImage($data)
     {
+        $dir = './data/uploads/form';
         $renamer = new \Zend\Filter\File\Rename(array(
-            'target' => './data/uploads/form/logo' . substr($data['name'], strrpos($data['name'], '.')),
+            'target' => $dir.'/logo' . substr($data['name'], strrpos($data['name'], '.')),
             'randomize' => true,
         ));
+
+        if (!file_exists($dir) && !mkdir($dir, 0755, true)) {
+            throw new \Exception("Failed to create upload folders");
+        }
 
         if ($status = $renamer->filter($data)) {
             return basename($status['tmp_name']);
