@@ -10,10 +10,11 @@ class GetForms extends AbstractHelper
         $this->objectManager = $objectManager;
     }
 
-    public function __invoke(array $params)
+    public function __invoke(array $params = array())
     {
         $validParams = array('id', 'publish', 'permalink');
         $queryParams = array();
+        $queryParams['publish'] = true;
 
         foreach ($params as $key => $val) {
             if (in_array($key, $validParams)) {
@@ -23,6 +24,6 @@ class GetForms extends AbstractHelper
 
         return $this->objectManager
                     ->getRepository('Form\Entity\Form')
-                    ->findBy($queryParams);
+                    ->findBy($queryParams, array('id' => 'ASC'));
     }
 }
