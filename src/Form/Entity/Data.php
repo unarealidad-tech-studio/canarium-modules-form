@@ -39,6 +39,11 @@ class Data {
      */
 	protected $parentdata;
 
+	/**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $status;    
+
     public function getId(){
 		return $this->id;
 	}
@@ -67,4 +72,14 @@ class Data {
 		$this->value = $i;
 	}
 	
+	public function getStatus() 
+    {
+        return $this->status;
+    }
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
+        return $this;
+    }
 }
