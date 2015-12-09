@@ -75,6 +75,12 @@ class ParentData extends EntityRepository implements MapperInterface
             ));
         }
 
+        if (isset($criteria['user_email'])) {
+            $query->andWhere($query->expr()->eq(
+                'parent_data_user.email', $query->expr()->literal($criteria['user_email'])
+            ));
+        }
+
         if (!empty($criteria['ids_to_exclude'])) {
 
             if (!array($criteria['ids_to_exclude'])) {

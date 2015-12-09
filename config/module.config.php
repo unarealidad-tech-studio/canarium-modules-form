@@ -223,6 +223,7 @@ return array(
                     'roles' => array(
                         1 => 'user',
                         2 => 'admin',
+                        3 => 'guest'
                     ),
                 ),
             ),
@@ -439,6 +440,7 @@ return array(
             'collection_query_whitelist' => array(
                 0 => 'order_by',
                 1 => 'limit',
+                3 => 'user_email'
             ),
             'page_size' => 25,
             'page_size_param' => 'limit',
