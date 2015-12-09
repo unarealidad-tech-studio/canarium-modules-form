@@ -124,21 +124,10 @@ class Form implements ServiceLocatorAwareInterface
 
         $form = new \Zend\Form\Form($entity->getName());
         $form->setLabel($entity->getLabel());
-        foreach($entity->getFieldset()->filter(
-            function($entry) {
-                  return $entry->getParent() ? false : true;
-                }
-            ) as $fieldsetEntity){
+        foreach($entity->getFieldset() as $fieldsetEntity){
             $class = $fieldsetEntity->getClass();
-            $fieldset = $fieldsetEntity->generateFieldsetObject($fieldsetEntity);
+            $fieldset = new $class($fieldsetEntity->getName());
             $fieldset->setLabel($fieldsetEntity->getLabel());
-            $fieldset->setObject($fieldsetEntity);
-
-            // GET FIELDSET'S CHILDREN
-            foreach($fieldsetEntity->getChildren() as $fieldsetChildEntity){
-                $fieldset->add($fieldsetChildEntity->generateFieldsetObject());
-            }
-
             foreach($fieldsetEntity->getElement() as $elementEntity){
                 $elementClass = $elementEntity->getClass();
                 $element = new $elementClass($elementEntity->getId());
@@ -153,6 +142,7 @@ class Form implements ServiceLocatorAwareInterface
 
             $form->add($fieldset);
         }
+
         return $form;
     }
 
@@ -253,46 +243,11 @@ class Form implements ServiceLocatorAwareInterface
         return ($results ? $results[0] : null);
     }
 
-    public function uploadImage($data)
+    public function findFormElementById($id)
     {
-        $dir = './data/uploads/form';
-        $renamer = new \Zend\Filter\File\Rename(array(
-            'target' => $dir.'/logo' . substr($data['name'], strrpos($data['name'], '.')),
-            'randomize' => true,
-        ));
-
-        if (!file_exists($dir) && !mkdir($dir, 0755, true)) {
-            throw new \Exception("Failed to create upload folders");
-        }
-
-        if ($status = $renamer->filter($data)) {
-            return basename($status['tmp_name']);
-        }
-        return $status;
+        $result = $this->getObjectManager()->getRepository('Form\Entity\Element')->find($id);
+        return $result;
     }
-
-    public function generateFormPermalink(CanariumForm $form)
-    {
-        $filter = new \Page\Filter\Url();
-        $permalink = $filter->filter($form->getName());
-
-        $unique = false;
-        $ctr = 1;
-        $runpermalink = $permalink;
-        while (!$unique) {
-            $result = $this->getObjectManager()->getRepository('Form\Entity\Form')->findOneBy(array(
-                'permalink' => $runpermalink
-            ));
-
-            if ($result) {
-                $runpermalink = $permalink . '-' . $ctr;
-                $ctr++;
-            } else {
-                return $runpermalink;
-            }
-        }
-    }
-
 
     public function createParentDataFromArray(CanariumForm $form, array $data)
     {
@@ -339,10 +294,6 @@ class Form implements ServiceLocatorAwareInterface
         if ($data['user'] instanceof \CanariumCore\Entity\User) {
             $qb->andWhere('a.user = :user')
                ->setParameter(':user', $data['user']);
-        }
-        if ($data['form'] instanceof \Form\Entity\Form) {
-            $qb->andWhere('a.form = :form')
-               ->setParameter(':form', $data['form']);
         }
 
         $query = $qb->getQuery();
@@ -407,9 +358,8 @@ class Form implements ServiceLocatorAwareInterface
     public function countForms()
     {
         $queryBuilder = $this->getObjectManager()->createQueryBuilder();
-        $queryBuilder->select('COUNT(f)')->from('Form\Entity\Form' , 'f');
+        $queryBuilder->select('COUNT(f)')->from('Form\Entity\Form', 'f');
         $query = $queryBuilder->getQuery();
         return $query->getSingleScalarResult();
     }
-
 }
