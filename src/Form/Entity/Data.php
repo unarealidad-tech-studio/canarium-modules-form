@@ -39,6 +39,23 @@ class Data {
      */
 	protected $parentdata;
 
+	/**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $status;    
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $date_updated;
+
+    /**
+     * @ORM\PreUpdate
+     **/
+    public function onPreUpdate(){
+        $this->setDateUpdated(new \DateTime('now'));
+    }
+
     public function getId(){
 		return $this->id;
 	}
@@ -67,4 +84,25 @@ class Data {
 		$this->value = $i;
 	}
 	
+	public function getStatus() 
+    {
+        return $this->status;
+    }
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    public function getDateUpdated()
+    {
+    	return $this->date_updated;
+    }
+
+    public function setDateUpdated(\DateTime $date)
+    {
+    	$this->date_updated = $date;
+    	return $this;
+    }
 }
