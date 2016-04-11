@@ -28,6 +28,7 @@
 		        <tbody>
 					<?php
 					foreach ($this->results as $row) {
+						if (!$row->getUser()) continue;
 					?>
 			        <tr>
 			        	<td><?php echo $row->getUser()->getEmail() ?></td>
