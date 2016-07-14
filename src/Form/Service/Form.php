@@ -266,6 +266,8 @@ class Form implements ServiceLocatorAwareInterface
         if ($flush_now) {
             $this->getParentDataMapper()->save();
         }
+
+        return $parent_data;
     }
 
     public function createParentDataFromArray(CanariumForm $form, array $data)
