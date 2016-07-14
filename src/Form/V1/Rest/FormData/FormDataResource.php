@@ -86,12 +86,18 @@ class FormDataResource extends AbstractResourceListener
             $additional_filters['order_by'] = $params->order_by;
         }
 
-        $entities = $this->getService()
+        $query = $this->getService()
             ->getParentDataMapper()
-            ->getFilteredQuery(array_merge($params->toArray(), $additional_filters))
-            ->getQuery()
-            ->getResult();
-        return $this->convertEntityToArray($entities);
+            ->getFilteredQuery(array_merge($params->toArray(), $additional_filters));
+
+        if (!empty($params->total_only)) {
+            $count = $query->select($query->expr()->count('parent_data.id'))
+                ->getQuery()->getSingleScalarResult();
+            return array(array('count' => $count));
+        } else {
+            $entities = $query->getQuery()->getResult();
+            return $this->convertEntityToArray($entities);
+        }
     }
 
     protected function convertEntityToArray($entities)

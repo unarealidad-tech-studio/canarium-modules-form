@@ -438,6 +438,7 @@ return array(
             ),
             'collection_query_whitelist' => array(
                 0 => 'order_by',
+                1 => 'total_only',
             ),
             'page_size' => 25,
             'page_size_param' => 'limit',
