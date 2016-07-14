@@ -249,6 +249,25 @@ class Form implements ServiceLocatorAwareInterface
         return $result;
     }
 
+    public function createDataFromArray(CanariumForm $form, ParentData $parent_data, array $data, $flush_now = false)
+    {
+        foreach ($data as $name => $value) {
+            $currentFormElement = $this->findFormElementByName($name, $form);
+            if ($currentFormElement) {
+                $currentData = new Data();
+                $currentData->setValue(serialize($value));
+                $currentData->setElement($currentFormElement);
+                $currentData->setParentData($parent_data);
+
+                $this->getObjectManager()->persist($currentData);
+            }
+        }
+
+        if ($flush_now) {
+            $this->getParentDataMapper()->save();
+        }
+    }
+
     public function createParentDataFromArray(CanariumForm $form, array $data)
     {
         //This will only support one dimensional arrays for now
@@ -258,17 +277,7 @@ class Form implements ServiceLocatorAwareInterface
 
         $this->getObjectManager()->persist($formData);
 
-        foreach ($data as $name => $value) {
-            $currentFormElement = $this->findFormElementByName($name, $form);
-            if ($currentFormElement) {
-                $currentData = new Data();
-                $currentData->setValue(serialize($value));
-                $currentData->setElement($currentFormElement);
-                $currentData->setParentData($formData);
-
-                $this->getObjectManager()->persist($currentData);
-            }
-        }
+        $this->createDataFromArray($form, $formData, $data);
 
         return $formData;
     }
