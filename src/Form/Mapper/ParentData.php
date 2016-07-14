@@ -69,9 +69,21 @@ class ParentData extends EntityRepository implements MapperInterface
             ));
         }
 
+        if (isset($criteria['form_id'])) {
+            $query->andWhere($query->expr()->eq(
+                'parent_data_form.id', $query->expr()->literal($criteria['form_id'])
+            ));
+        }
+
         if (isset($criteria['user_id'])) {
             $query->andWhere($query->expr()->eq(
                 'parent_data_user.id', $query->expr()->literal($criteria['user_id'])
+            ));
+        }
+
+        if (isset($criteria['user_email'])) {
+            $query->andWhere($query->expr()->eq(
+                'parent_data_user.email', $query->expr()->literal($criteria['user_email'])
             ));
         }
 
@@ -91,6 +103,10 @@ class ParentData extends EntityRepository implements MapperInterface
             );
         } else {
             $query->orderBy('parent_data.date', Criteria::ASC);
+        }
+
+        if (!empty($criteria['limit'])) {
+            $query->setMaxResults($criteria['limit']);
         }
 
         return $query;

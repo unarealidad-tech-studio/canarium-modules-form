@@ -57,6 +57,11 @@ class Module implements ApigilityProviderInterface
 					$objectManager = $locator->get('doctrine.entitymanager.orm_default');
 					return new \Form\View\Helper\GetFormData($objectManager);
 				},
+                'getForms' => function($sm) {
+                    $locator = $sm->getServiceLocator();
+                    $objectManager = $locator->get('doctrine.entitymanager.orm_default');
+                    return new \Form\View\Helper\GetForms($objectManager);
+                }
 			),
 		);
 	}

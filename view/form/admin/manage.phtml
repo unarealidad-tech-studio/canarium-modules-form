@@ -1,38 +1,46 @@
 <div class="page-head">
-    <h3 class="m-b-less">
-        Manage Forms
-    </h3>
+	<h3 class="m-b-less">
+		Manage Forms
+	</h3>
 </div>
 <div class="wrapper">
 	<div class="row">
-	    <div class="col-sm-12">
-	        <section class="panel">
-	            <header class="panel-heading head-border">
-	                Manage Forms
-	            </header>
-	            <table class="table">
-	                <thead>
-	                <tr>
-	                    <th>#</th>
-	                    <th>Name</th>
-	                    <th>Label</th>
-	                    <th>Action</th>
-	                </tr>
-	                </thead>
-	                <tbody>
-	                <?php foreach($paginator as $entry) { ?>
-	                <tr>
-	                    <td><?php echo $entry->getId()?></td>
-	                    <td><?php echo $entry->getName()?></td>
-	                    <td><?php echo $entry->getLabel()?></td>
-	                    <td>
-	                    	<a href="<?=$this->url('admin/form',array('action' => 'edit-form', 'id' => $entry->getId()))?>"><button class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></button></a>
-	                    	<?php /*<a href="<?=$this->url('admin/form',array('action' => 'results', 'id' => $entry->getId()))?>"><button class="btn btn-primary btn-xs">Results</button></a> */ ?>
-	                    </td>
-	                </tr>
-	                <?php } ?>
-	                </tbody>
-	            </table>
+		<div class="col-sm-12">
+			<section class="panel">
+				<header class="panel-heading head-border">
+					Manage Forms
+				</header>
+				<table class="table">
+					<thead>
+					<tr>
+						<th>#</th>
+						<th>Status</th>
+						<th>Name</th>
+						<th>Permalink</th>
+						<th>Label</th>
+						<th>Action</th>
+					</tr>
+					</thead>
+					<tbody>
+					<?php foreach($paginator as $entry) { ?>
+					<tr>
+						<td><?php echo $entry->getId()?></td>
+						<td><?php echo $entry->getPublish() ? '<span class="label label-success">Published</span>' : '<span class="label label-warning">Unpublished</span>';?></td>
+						<td><?php echo $entry->getName()?></td>
+						<td>
+							<?php if ($entry->getPermalink() != ''): ?>
+							<a target="_blank" href="<?php echo '/form/index/'.$entry->getPermalink()?>"><?php echo $entry->getPermalink()?></a>
+							<?php endif;?>
+						</td>
+						<td><?php echo $entry->getLabel()?></td>
+						<td>
+							<a href="<?=$this->url('admin/form',array('action' => 'edit-form', 'id' => $entry->getId()))?>"><button class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></button></a>
+							<?php /*<a href="<?=$this->url('admin/form',array('action' => 'results', 'id' => $entry->getId()))?>"><button class="btn btn-primary btn-xs">Results</button></a> */ ?>
+						</td>
+					</tr>
+					<?php } ?>
+					</tbody>
+				</table>
 
 				<?php echo
 				$this->paginationControl(
@@ -41,7 +49,7 @@
 				array('partial/paginator', 'CanariumCore'),
 				$this->routeParams
 				)?>
-	        </section>
-	    </div>
+			</section>
+		</div>
 	</div>
 </div>

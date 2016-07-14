@@ -243,6 +243,33 @@ class Form implements ServiceLocatorAwareInterface
         return ($results ? $results[0] : null);
     }
 
+    public function findFormElementById($id)
+    {
+        $result = $this->getObjectManager()->getRepository('Form\Entity\Element')->find($id);
+        return $result;
+    }
+
+    public function createDataFromArray(CanariumForm $form, ParentData $parent_data, array $data, $flush_now = false)
+    {
+        foreach ($data as $name => $value) {
+            $currentFormElement = $this->findFormElementByName($name, $form);
+            if ($currentFormElement) {
+                $currentData = new Data();
+                $currentData->setValue(serialize($value));
+                $currentData->setElement($currentFormElement);
+                $currentData->setParentData($parent_data);
+
+                $this->getObjectManager()->persist($currentData);
+            }
+        }
+
+        if ($flush_now) {
+            $this->getParentDataMapper()->save();
+        }
+
+        return $parent_data;
+    }
+
     public function createParentDataFromArray(CanariumForm $form, array $data)
     {
         //This will only support one dimensional arrays for now
@@ -252,17 +279,7 @@ class Form implements ServiceLocatorAwareInterface
 
         $this->getObjectManager()->persist($formData);
 
-        foreach ($data as $name => $value) {
-            $currentFormElement = $this->findFormElementByName($name, $form);
-            if ($currentFormElement) {
-                $currentData = new Data();
-                $currentData->setValue(serialize($value));
-                $currentData->setElement($currentFormElement);
-                $currentData->setParentData($formData);
-
-                $this->getObjectManager()->persist($currentData);
-            }
-        }
+        $this->createDataFromArray($form, $formData, $data);
 
         return $formData;
     }
@@ -288,10 +305,6 @@ class Form implements ServiceLocatorAwareInterface
         if ($data['user'] instanceof \CanariumCore\Entity\User) {
             $qb->andWhere('a.user = :user')
                ->setParameter(':user', $data['user']);
-        }
-        if ($data['form'] instanceof \Form\Entity\Form) {
-            $qb->andWhere('a.form = :form')
-               ->setParameter(':form', $data['form']);
         }
 
         $query = $qb->getQuery();
@@ -356,9 +369,8 @@ class Form implements ServiceLocatorAwareInterface
     public function countForms()
     {
         $queryBuilder = $this->getObjectManager()->createQueryBuilder();
-        $queryBuilder->select('COUNT(f)')->from('Form\Entity\Form' , 'f');
+        $queryBuilder->select('COUNT(f)')->from('Form\Entity\Form', 'f');
         $query = $queryBuilder->getQuery();
         return $query->getSingleScalarResult();
     }
-
 }

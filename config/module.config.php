@@ -223,6 +223,7 @@ return array(
                     'roles' => array(
                         1 => 'user',
                         2 => 'admin',
+                        3 => 'guest'
                     ),
                 ),
             ),
@@ -258,7 +259,7 @@ return array(
                     ),
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'id' => '[0-9]*',
+                        'id' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ),
                 ),
                 'may_terminate' => true,
@@ -438,7 +439,9 @@ return array(
             ),
             'collection_query_whitelist' => array(
                 0 => 'order_by',
-                1 => 'total_only',
+                1 => 'limit',
+                2 => 'total_only',
+                3 => 'user_email'
             ),
             'page_size' => 25,
             'page_size_param' => 'limit',

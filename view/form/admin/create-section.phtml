@@ -1,4 +1,10 @@
 <?php
+
+$this->headScript()->prependFile($this->basePath() . '/assets/admin/js/jquery-ui.js');
+$this->inlineScript()->prependFile($this->basePath() . '/assets/admin/js/plugins/ckeditor/adapters/jquery.js');
+$this->inlineScript()->prependFile($this->basePath() . '/assets/admin/js/plugins/ckeditor/config.js');
+$this->inlineScript()->prependFile($this->basePath() . '/assets/admin/js/plugins/ckeditor/ckeditor.js');
+
 $form->setAttribute('action', $this->url('admin/form', array('action' => 'create-section', 'id' => $this->id)))
 	 ->prepare();
 
@@ -21,15 +27,19 @@ $element = $fields->get('element');
                     <div class="form-group">
                         <label for="">Section Name</label>
                         <?php echo $this->formRow($fields->get('name')); ?>
-                    </div>      
+                    </div>
                     <div class="form-group">
                         <label for="">Section Label</label>
                         <?php echo $this->formRow($fields->get('label')); ?>
-                    </div> 
+                    </div>
                     <div class="form-group">
                         <label for="">Sort</label><br />
                         <?php echo $this->formRow($fields->get('sort')); ?>
-                    </div> 
+                    </div>
+                    <div class="form-group">
+                        <label for="">Description</label><br />
+                        <?php echo $this->formRow($fields->get('description')); ?>
+                    </div>
                 </div>
             </section>
 		</div>
@@ -81,3 +91,9 @@ $element = $fields->get('element');
     </div>
 </div>
 <?php echo $this->form()->closeTag(); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('textarea[name="form-fieldset[description]"]').ckeditor();
+    });
+</script>
