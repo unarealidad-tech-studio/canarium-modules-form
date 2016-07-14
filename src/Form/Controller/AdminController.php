@@ -77,8 +77,8 @@ class AdminController extends AbstractActionController
             $form->setData($post);
             if ($form->isValid() && !$error) {
                 if ($entity->getPermalink() == '') {
-                    $permalink = $this->getFormService()->generateFormPermalink($entity);
-                    $entity->setPermalink($permalink);
+                    // $permalink = $this->getFormService()->generateFormPermalink($entity);
+                    // $entity->setPermalink($permalink);
                 }
 
                 if (
