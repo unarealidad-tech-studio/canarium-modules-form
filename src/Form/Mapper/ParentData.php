@@ -101,8 +101,6 @@ class ParentData extends EntityRepository implements MapperInterface
                 'parent_data.'.$criteria['order_by']['field'],
                 !empty($criteria['order_by']['direction']) && strtolower($criteria['order_by']['direction']) == 'desc' ? Criteria::DESC : Criteria::ASC
             );
-        } else {
-            $query->orderBy('parent_data.date', Criteria::ASC);
         }
 
         if (!empty($criteria['limit'])) {
