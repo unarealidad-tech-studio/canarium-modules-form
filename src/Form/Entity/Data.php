@@ -10,6 +10,7 @@ use Zend\Form\Annotation;
 /** 
 * @ORM\Entity 
 * @ORM\Table(name="form_data")
+* @ORM\Entity(repositoryClass="Form\Mapper\Data")
 * @ORM\HasLifecycleCallbacks
 */
 
@@ -32,7 +33,7 @@ class Data {
 	 * @ORM\JoinColumn(name="element_id", referencedColumnName="id", onDelete="CASCADE")
      */
 	protected $element;
-	
+
 	/**
      * @ORM\ManyToOne(targetEntity="ParentData",inversedBy="data")
 	 * @ORM\JoinColumn(name="form_parent_data_id", referencedColumnName="id", onDelete="CASCADE")

@@ -14,12 +14,13 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use CanariumCore\Mapper\MapperInterface;
 
 use Form\Entity\ParentData as ParentDataEntity;
+use Form\Entity\Data as DataEntity;
 
-class ParentData extends EntityRepository implements MapperInterface
+class Data extends EntityRepository implements MapperInterface
 {
     public function create(array $data)
     {
-        $newItem = new ParentDataEntity();
+        $newItem = new DataEntity();
 
         $hydrator = new DoctrineHydrator($this->getEntityManager(), $byValue = false);
 
@@ -59,36 +60,11 @@ class ParentData extends EntityRepository implements MapperInterface
 
     public function getAvailableLogValuesQuery(array $criteria = null)
     {
+
         $query = $this->createQueryBuilder('data')
-            ->innerJoin('data.parentdata', 'parent_data');
-
-        if (isset($criteria['form_id'])) {
-            $query->andWhere($query->expr()->eq(
-                'parent_data.form.id', $query->expr()->literal($criteria['form_id'])
-            ));
-        }
-
-        if (isset($criteria['user_id'])) {
-            $query->andWhere($query->expr()->eq(
-                'parent_data.user.id', $query->expr()->literal($criteria['user_id'])
-            ));
-        }
-
-        $query->groupBy('parent_data.id');
-        return $query;
-    }
-
-    public function getFilteredQuery(array $criteria = null)
-    {
-        $query = $this->createQueryBuilder('parent_data')
-            ->leftJoin('parent_data.form', 'parent_data_form')
-            ->leftJoin('parent_data.user', 'parent_data_user');
-
-        if (isset($criteria['form_name'])) {
-            $query->andWhere($query->expr()->eq(
-                'parent_data_form.name', $query->expr()->literal($criteria['form_name'])
-            ));
-        }
+            ->innerJoin('data.parentdata', 'parent_data')
+            ->leftJoin('parent_data.user', 'parent_data_user')
+            ->leftJoin('parent_data.form', 'parent_data_form');
 
         if (isset($criteria['form_id'])) {
             $query->andWhere($query->expr()->eq(
@@ -102,42 +78,8 @@ class ParentData extends EntityRepository implements MapperInterface
             ));
         }
 
-        if (isset($criteria['user_email'])) {
-            $query->andWhere($query->expr()->eq(
-                'parent_data_user.email', $query->expr()->literal($criteria['user_email'])
-            ));
-        }
-
-        if (!empty($criteria['ids_to_exclude'])) {
-
-            if (!array($criteria['ids_to_exclude'])) {
-                $criteria['ids_to_exclude'] = explode(',', $criteria['ids_to_exclude']);
-            }
-
-            $query->andWhere($query->expr()->notIn('parent_data.id', $criteria['ids_to_exclude']));
-        }
-
-        if (!empty($criteria['order_by']['field'])) {
-            $query->orderBy(
-                'parent_data.'.$criteria['order_by']['field'],
-                !empty($criteria['order_by']['direction']) && strtolower($criteria['order_by']['direction']) == 'desc' ? Criteria::DESC : Criteria::ASC
-            );
-        }
-
-        if (!empty($criteria['limit'])) {
-            $query->setMaxResults($criteria['limit']);
-        }
-
+        $query->groupBy('parent_data.id');
         return $query;
-    }
-
-    public function getPaginatedAdapter(array $criteria = null)
-    {
-        $query = $this->getFilteredQuery($criteria);
-
-        $adapter = new DoctrinePaginator(new Paginator($query, $fetchJoinCollection = true));
-
-        return $adapter;
     }
 
     public function fetchAll(

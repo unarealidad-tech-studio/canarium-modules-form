@@ -32,6 +32,34 @@ class Form implements ServiceLocatorAwareInterface
      * @var \Form\Mapper\ParentData
      */
     protected $parentDataMapper;
+    /**
+     * @var \Form\Mapper\Data
+     */
+    protected $dataMapper;
+
+    public function getAvailableLogsWithSubjects($form, $user)
+    {
+        $available_subjects = array();
+
+        $criteria = array(
+            'form_id' => $form->getId(),
+            'user_id' => $user->getId()
+        );
+
+        $query = $this->getDataMapper()->getAvailableLogValuesQuery($criteria);
+
+        $output = $query->select('data.value')->getQuery()->getArrayResult();
+
+        foreach ($output as $subject) {
+            $unserialized_subject = unserialize($subject['value']);
+
+            if (!in_array($unserialized_subject, $available_subjects) && is_string($unserialized_subject)) {
+                $available_subjects[] = $unserialized_subject;
+            }
+        }
+
+        return $available_subjects;
+    }
 
     public function createParentDataFromApiInput(array $api_input)
     {
@@ -364,6 +392,15 @@ class Form implements ServiceLocatorAwareInterface
         }
 
         return $this->parentDataMapper;
+    }
+
+    public function getDataMapper()
+    {
+        if (!$this->dataMapper) {
+            $this->dataMapper = $this->getServiceLocator()->get('canariumform_data_mapper');
+        }
+
+        return $this->dataMapper;
     }
 
     public function countForms()

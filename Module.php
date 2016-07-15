@@ -87,6 +87,12 @@ class Module implements ApigilityProviderInterface
                         'Form\\Entity\\ParentData'
                     );
                 },
+                'canariumform_data_mapper' => function ($sm) {
+                    $entityManager = $sm->get('Doctrine\ORM\EntityManager');
+                    return $entityManager->getRepository(
+                        'Form\\Entity\\Data'
+                    );
+                },
 				'form_upload_handler' => function ($sm) {
                     $options = array(
                         'upload_dir' => './data/uploads/tmp/',
