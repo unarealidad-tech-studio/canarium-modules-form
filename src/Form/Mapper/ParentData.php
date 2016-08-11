@@ -132,6 +132,10 @@ class ParentData extends EntityRepository implements MapperInterface
             $query->setMaxResults($criteria['limit']);
         }
 
+        if (!empty($criteria['start'])) {
+            $query->setFirstResult($criteria['start']);
+        }
+
         return $query;
     }
 
