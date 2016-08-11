@@ -441,7 +441,9 @@ return array(
                 0 => 'order_by',
                 1 => 'limit',
                 2 => 'total_only',
-                3 => 'user_email'
+                3 => 'user_email',
+                4 => 'this_month',
+                5 => 'unique',
             ),
             'page_size' => 25,
             'page_size_param' => 'limit',

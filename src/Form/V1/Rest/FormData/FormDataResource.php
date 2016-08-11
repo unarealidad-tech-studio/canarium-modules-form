@@ -89,8 +89,12 @@ class FormDataResource extends AbstractResourceListener
         $query = $this->getService()
             ->getParentDataMapper()
             ->getFilteredQuery(array_merge($params->toArray(), $additional_filters));
+        if (!empty($params->unique)) {
+            $entities = $query->getQuery()->getResult();
 
-        if (!empty($params->total_only)) {
+            $count = $this->getNonDuplicateCount($entities);
+            return array(array('count' => $count));
+        } elseif (!empty($params->total_only)) {
             $count = $query->select($query->expr()->count('parent_data.id'))
                 ->getQuery()->getSingleScalarResult();
             return array(array('count' => $count));
@@ -98,6 +102,35 @@ class FormDataResource extends AbstractResourceListener
             $entities = $query->getQuery()->getResult();
             return $this->convertEntityToArray($entities);
         }
+    }
+
+    protected function getNonDuplicateCount($entities)
+    {
+        $current_count = 0;
+        $index_check = array();
+        foreach ($entities as $entity) {
+            if ($entity->getData()) {
+                $current_parent_data = array();
+
+                foreach($entity->getData() as $element_data) {
+                    if ($element_data->getElement()) {
+                        $current_parent_data[$element_data->getElement()->getName()] =
+                            unserialize($element_data->getValue());
+                    }
+                }
+
+                if (!empty($current_parent_data['subject']) && !empty($current_parent_data['sender'])) {
+                    $current_index = $current_parent_data['subject'].$current_parent_data['sender'];
+                    if (empty($index_check[$current_index])) {
+                        $index_check[$current_index] = 1;
+                        $current_count++;
+                    }
+                }
+
+            }
+        }
+
+        return $current_count;
     }
 
     protected function convertEntityToArray($entities)

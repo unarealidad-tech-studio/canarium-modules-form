@@ -108,6 +108,10 @@ class ParentData extends EntityRepository implements MapperInterface
             ));
         }
 
+        if (isset($criteria['this_month'])) {
+            $query->andWhere("parent_data.date BETWEEN '".date('Y-m-01')."' AND '".date('Y-m-t')."'");
+        }
+
         if (!empty($criteria['ids_to_exclude'])) {
 
             if (!array($criteria['ids_to_exclude'])) {
