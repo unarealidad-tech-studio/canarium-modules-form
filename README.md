@@ -22,7 +22,7 @@ _None_
 
 URL | Template | Access | Description
 
------ | ----- | ----- | ----- | -----
+----- | ----- | ----- | -----
 /form/:form-id | form/index.phtml | Public | Shows the specified form
 /form/thank-you | form/thank-you.phtml | Public | The thank you page after a successful submission
 /form/submitted-forms | form/submitted-forms.phtml | User | List of forms submissions viewable to the current logged in user
