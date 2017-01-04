@@ -21,7 +21,6 @@ _None_
 # Exposed Pages
 
 URL | Template | Access | Description
-
 ----- | ----- | ----- | -----
 /form/:form-id | form/index.phtml | Public | Shows the specified form
 /form/thank-you | form/thank-you.phtml | Public | The thank you page after a successful submission
